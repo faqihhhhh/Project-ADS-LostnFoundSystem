@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth                          # ← tambah ini
+from fastapi.staticfiles import StaticFiles
+from app.routers import auth, item, claim, leaderboard, notification, match
+
+import os
 
 app = FastAPI(title="IPB Lost & Found API", version="1.0.0")
 
@@ -12,7 +15,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth.router)                       # ← tambah ini
+os.makedirs("uploads", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+app.include_router(auth.router)
+app.include_router(item.router)
+app.include_router(claim.router)
+app.include_router(leaderboard.router) 
+app.include_router(notification.router)
+app.include_router(match.router)
+
 
 @app.get("/")
 def root():
