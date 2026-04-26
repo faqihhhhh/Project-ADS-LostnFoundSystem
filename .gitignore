@@ -10,10 +10,16 @@ frontend/.env
 # Alembic
 backend/alembic/versions/*.pyc
 
-# Nodek
+# Node
 frontend/node_modules/
 frontend/dist/
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Upload files
+backend/uploads/
+
+# Database lokal (kalau pakai sqlite)
+*.db
