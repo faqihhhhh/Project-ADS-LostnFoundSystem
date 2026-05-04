@@ -23,9 +23,9 @@ def get_current_user(
     return user
 
 def get_current_mahasiswa(current_user: User = Depends(get_current_user)) -> User:
-    """Mahasiswa dan staff bisa akses. Admin tidak."""
-    if current_user.role not in [UserRole.mahasiswa, UserRole.staff]:
-        raise HTTPException(status_code=403, detail="Akses ditolak")
+    """Khusus mahasiswa. Admin tidak bisa akses."""
+    if current_user.role != UserRole.mahasiswa:
+        raise HTTPException(status_code=403, detail="Akses ditolak: hanya mahasiswa")
     return current_user
 
 def get_current_admin(current_user: User = Depends(get_current_user)) -> User:

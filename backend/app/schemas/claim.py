@@ -16,8 +16,7 @@ class ClaimOut(BaseModel):
     bukti_foto: List[str] = []
     created_at: datetime
     catatan_admin: Optional[str] = None
+    kode_pengambilan: Optional[str] = None
 
     class Config:
         from_attributes = True
-
-kode_pengambilan: Optional[str] = None
