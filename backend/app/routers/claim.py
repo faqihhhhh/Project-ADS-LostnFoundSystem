@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.database import get_db
@@ -14,6 +14,7 @@ from app.schemas.claim import ClaimCreate, ClaimOut
 from app.core.deps import get_current_mahasiswa, get_current_admin
 
 router = APIRouter(prefix="/claims", tags=["Claims"])
+
 
 def get_service(db: Session = Depends(get_db)) -> ClaimService:
     return ClaimService(
@@ -74,3 +75,19 @@ def reject(
     current_user: User = Depends(get_current_admin)       # ← admin only
 ):
     return service.reject(claim_id, catatan)
+
+@router.get("/{claim_id}/kode", )
+def lihat_kode_pengambilan(
+    claim_id: int,
+    service: ClaimService = Depends(get_service),
+    current_user: User = Depends(get_current_admin)
+):
+    claim = service.claim_repo.get_by_id(claim_id)
+    if not claim:
+        raise HTTPException(status_code=404, detail="Klaim tidak ditemukan")
+    return {
+        "claim_id": claim.id,
+        "nama_barang": claim.item.nama_publik,
+        "kode_pengambilan": claim.kode_pengambilan,
+        "status": claim.status
+    }

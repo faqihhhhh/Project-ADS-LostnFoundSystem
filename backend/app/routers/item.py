@@ -25,7 +25,7 @@ def get_match_service(db: Session = Depends(get_db)) -> MatchService:
         NotificationService(NotificationRepository(db))
     )
 
-# ── Publik / Guest ────────────────────────────────────────────────────
+# ── 1. LIST BARANG (UMUM) ─────────────────────────────────────────────
 @router.get("", response_model=List[ItemOut])
 def list_barang(
     tipe: Optional[ItemType] = Query(None),
@@ -37,6 +37,17 @@ def list_barang(
 ):
     return service.get_all(tipe, kategori, status, q, current_user)
 
+# ── 2. ADMIN: LIST SEMUA (HARUS DI ATAS {item_id}) ─────────────────────
+# Karena jalurnya statis (/admin/all), diletakkan sebelum jalur dinamis
+@router.get("/admin/all", response_model=List[ItemOut])
+def list_semua_admin(
+    service: ItemService = Depends(get_item_service),
+    current_user: User = Depends(get_current_admin)
+):
+    return service.get_all_for_admin()
+
+# ── 3. DETAIL BARANG (DINAMIS) ────────────────────────────────────────
+# Jalur ini menggunakan variabel {item_id}, maka ditaruh di paling bawah kategori GET
 @router.get("/{item_id}", response_model=ItemOut)
 def detail_barang(
     item_id: int,
@@ -45,13 +56,13 @@ def detail_barang(
 ):
     return service.get_detail(item_id, current_user)
 
-# ── Khusus Mahasiswa ──────────────────────────────────────────────────
+# ── 4. AKSI MAHASISWA (POST) ──────────────────────────────────────────
 @router.post("", response_model=ItemOut)
 def lapor(
     payload: ItemCreate,
     service: ItemService = Depends(get_item_service),
     match_service: MatchService = Depends(get_match_service),
-    current_user: User = Depends(get_current_mahasiswa)   # ← mahasiswa only
+    current_user: User = Depends(get_current_mahasiswa)
 ):
     item = service.lapor(payload, current_user)
     match_service.auto_detect(item)
@@ -62,7 +73,7 @@ def upload_foto(
     item_id: int,
     file: UploadFile = File(...),
     service: ItemService = Depends(get_item_service),
-    current_user: User = Depends(get_current_mahasiswa)   # ← mahasiswa only
+    current_user: User = Depends(get_current_mahasiswa)
 ):
     return service.upload_foto(item_id, file, current_user)
 
@@ -71,23 +82,16 @@ def upload_bukti_kepemilikan(
     item_id: int,
     file: UploadFile = File(...),
     service: ItemService = Depends(get_item_service),
-    current_user: User = Depends(get_current_mahasiswa)   # ← mahasiswa only
+    current_user: User = Depends(get_current_mahasiswa)
 ):
     return service.upload_bukti_kepemilikan(item_id, file, current_user)
 
-# ── Khusus Admin ──────────────────────────────────────────────────────
-@router.get("/admin/all", response_model=List[ItemOut])
-def list_semua_admin(
-    service: ItemService = Depends(get_item_service),
-    current_user: User = Depends(get_current_admin)       # ← admin only
-):
-    return service.get_all_for_admin()
-
+# ── 5. AKSI ADMIN (DELETE) ────────────────────────────────────────────
 @router.delete("/{item_id}")
 def hapus(
     item_id: int,
     service: ItemService = Depends(get_item_service),
-    current_user: User = Depends(get_current_admin)       # ← admin only
+    current_user: User = Depends(get_current_admin)
 ):
     service.hapus(item_id, current_user)
     return {"message": "Barang berhasil dihapus"}

@@ -1,12 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.routers import auth, item, claim, leaderboard, notification, match
+from app.routers import auth, item, claim, leaderboard, notification, match, found_report
+from apscheduler.schedulers.background import BackgroundScheduler
+from app.services.item_service import ItemService
+from app.repositories.item_repo import ItemRepository
+from app.database import SessionLocal
 
 import os
 
 app = FastAPI(title="IPB Lost & Found API", version="1.0.0")
 
+app.include_router(found_report.router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -29,3 +34,16 @@ app.include_router(match.router)
 @app.get("/")
 def root():
     return {"message": "IPB Lost & Found API is running"}
+
+def job_expire_items():
+    db = SessionLocal()
+    try:
+        service = ItemService(ItemRepository(db))
+        count = service.expire_items()
+        print(f"[Scheduler] {count} item diexpire")
+    finally:
+        db.close()
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(job_expire_items, "interval", hours=24)
+scheduler.start()

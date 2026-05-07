@@ -5,7 +5,9 @@ from app.repositories.notification_repo import NotificationRepository
 from app.models.item_match import ItemMatch, MatchStatus
 from app.models.item import Item, ItemType, ItemStatus
 from app.models.notification import Notification
+from app.routers import match
 from app.services.notification_service import NotificationService
+import secrets, string
 
 class MatchService:
     def __init__(
@@ -91,29 +93,33 @@ class MatchService:
     def get_pending(self) -> list[ItemMatch]:
         return self.match_repo.get_pending()
 
+
+    def _generate_kode(self, length: int = 6) -> str:
+        chars = string.ascii_uppercase + string.digits
+        return ''.join(secrets.choice(chars) for _ in range(length))
+
     def confirm(self, match_id: int, catatan: str) -> ItemMatch:
-        """Admin konfirmasi kecocokan"""
         match = self.match_repo.get_by_id(match_id)
         if not match:
             raise HTTPException(status_code=404, detail="Match tidak ditemukan")
         if match.status != MatchStatus.pending:
             raise HTTPException(status_code=400, detail="Match sudah diproses")
 
+        kode = self._generate_kode()
         match.status = MatchStatus.confirmed
         match.catatan_admin = catatan
-
-        # Tutup kedua item
         match.found_item.status = ItemStatus.closed
         match.lost_item.status  = ItemStatus.closed
 
-        # Notifikasi ke pemilik barang hilang
+    # Notifikasi ke pemilik barang hilang — sertakan kode pengambilan
         self.notif_service.kirim(
             user_id=match.lost_item.user_id,
-            judul="Barang kamu mungkin ditemukan!",
+            judul="Barang kamu ditemukan!",
             pesan=(
-                f"Admin telah mengkonfirmasi kecocokan barang '{match.lost_item.nama_publik}'. "
-                f"Barang berada di: {match.found_item.lokasi_sekarang}. "
-                f"Segera hubungi admin untuk pengambilan."
+                f"Admin mengkonfirmasi barang '{match.lost_item.nama_publik}' telah ditemukan. "
+                f"Lokasi barang: {match.found_item.lokasi_sekarang}. "
+                f"Kode pengambilan: {kode}. "
+                f"Tunjukkan kode ini ke petugas."
             )
         )
 
@@ -121,7 +127,7 @@ class MatchService:
         self.notif_service.kirim(
             user_id=match.found_item.user_id,
             judul="Pemilik barang temuanmu ditemukan!",
-            pesan=f"Admin telah mengkonfirmasi barang '{match.found_item.nama_publik}' milik mahasiswa lain. Terima kasih!"
+            pesan=f"Barang '{match.found_item.nama_publik}' telah dikonfirmasi dan akan dikembalikan ke pemiliknya. Terima kasih!"
         )
 
         return self.match_repo.save(match)
