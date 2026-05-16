@@ -11,7 +11,7 @@ from app.services.claim_service import ClaimService
 from app.services.notification_service import NotificationService
 from app.models.user import User
 from app.schemas.claim import ClaimCreate, ClaimOut
-from app.core.deps import get_current_mahasiswa, get_current_admin
+from app.core.deps import get_current_mahasiswa, get_current_admin, get_pagination_params
 
 router = APIRouter(prefix="/claims", tags=["Claims"])
 
@@ -46,17 +46,19 @@ def upload_bukti(
 @router.get("/me", response_model=List[ClaimOut])
 def klaim_saya(
     service: ClaimService = Depends(get_service),
-    current_user: User = Depends(get_current_mahasiswa)   # ← mahasiswa only
+    current_user: User = Depends(get_current_mahasiswa),   # ← mahasiswa only
+    pagination: dict = Depends(get_pagination_params)
 ):
-    return service.claim_repo.get_by_user(current_user.id)
+    return service.claim_repo.get_by_user(current_user.id, **pagination)
 
 # ── Khusus Admin ──────────────────────────────────────────────────────
 @router.get("", response_model=List[ClaimOut])
 def semua_klaim(
     service: ClaimService = Depends(get_service),
-    current_user: User = Depends(get_current_admin)       # ← admin only
+    current_user: User = Depends(get_current_admin),       # ← admin only
+    pagination: dict = Depends(get_pagination_params)
 ):
-    return service.claim_repo.get_all()
+    return service.claim_repo.get_all(**pagination)
 
 @router.patch("/{claim_id}/approve", response_model=ClaimOut)
 def approve(

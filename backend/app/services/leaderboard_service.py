@@ -24,8 +24,8 @@ class LeaderboardService:
 
         return LeaderboardResponse(top10=top10, poin_saya=poin_saya, peringkat_saya=peringkat_saya)
 
-    def get_riwayat(self, user_id: int) -> list[PointLogOut]:
-        logs = self.point_log_repo.get_by_user(user_id)
+    def get_riwayat(self, user_id: int, skip: int = 0, limit: int = 24) -> list[PointLogOut]:
+        logs = self.point_log_repo.get_by_user(user_id, skip, limit)
         return [
             PointLogOut(id=l.id, jumlah=l.jumlah, alasan=l.alasan, created_at=str(l.created_at))
             for l in logs

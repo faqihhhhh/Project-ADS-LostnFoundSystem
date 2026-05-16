@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Query
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -6,6 +6,12 @@ from app.core.security import decode_token
 from app.models.user import User, UserRole
 
 bearer_scheme = HTTPBearer(auto_error=False)
+
+def get_pagination_params(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(24, ge=1, le=100)
+):
+    return {"skip": skip, "limit": limit}
 
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),

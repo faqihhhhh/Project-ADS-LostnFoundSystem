@@ -1,7 +1,9 @@
 from pydantic import BaseModel, model_validator
 from datetime import datetime
 from typing import Optional, List
-from app.models.item import ItemType, ItemStatus, ItemCategory
+
+from sqlalchemy import Enum
+from app.models.item import ItemType, ItemStatus, ItemCategory, ItemLocation
 
 class ItemFotoOut(BaseModel):
     id: int
@@ -19,9 +21,11 @@ class ItemCreate(BaseModel):
     # FOUND
     lokasi_ditemukan: Optional[str] = None
     lokasi_sekarang: Optional[str] = None
+    lokasi_ditemukan_list = Optional[ItemLocation] = None
 
     # LOST
     lokasi_kemungkinan: Optional[List[str]] = None
+    lokasi_kemungkinan_list = Optional[List[ItemLocation]] = None
 
     tanggal: datetime
 
@@ -50,6 +54,8 @@ class ItemOut(BaseModel):
     lokasi_sekarang: Optional[str] = None
     lokasi_kemungkinan: Optional[List[str]] = None
     bukti_kepemilikan: Optional[List[str]] = None
+    lokasi_ditemukan_list = Optional[ItemLocation] = None
+    lokasi_kemungkinan_list = Optional[List[ItemLocation]] = None
     tanggal: datetime
     expired_at: Optional[datetime] = None
     created_at: datetime
@@ -68,6 +74,8 @@ class ItemOutPublik(BaseModel):
     nama_publik: str                            # hanya nama universal
     lokasi_ditemukan: Optional[str] = None      # FOUND: tempat ditemukan saja
     lokasi_kemungkinan: Optional[List[str]] = None  # LOST: area kemungkinan
+    lokasi_ditemukan_list: Optional[ItemLocation] = None
+    lokasi_kemungkinan_list: Optional[List[ItemLocation]] = None
     tanggal: datetime
     foto: List[ItemFotoOut] = []                # foto FOUND disembunyikan untuk guest
 

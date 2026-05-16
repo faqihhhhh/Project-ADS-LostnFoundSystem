@@ -8,11 +8,13 @@ class FoundReportRepository:
     def get_by_id(self, report_id: int) -> FoundReport | None:
         return self.db.query(FoundReport).filter(FoundReport.id == report_id).first()
 
-    def get_by_reporter(self, reporter_id: int) -> list[FoundReport]:
+    def get_by_reporter(self, reporter_id: int, skip: int = 0, limit: int = 24) -> list[FoundReport]:
         return (
             self.db.query(FoundReport)
             .filter(FoundReport.reporter_id == reporter_id)
             .order_by(FoundReport.created_at.desc())
+            .offset(skip)
+            .limit(limit)
             .all()
         )
 
@@ -22,11 +24,13 @@ class FoundReportRepository:
             FoundReport.reporter_id == reporter_id
         ).first()
 
-    def get_all_pending(self) -> list[FoundReport]:
+    def get_all_pending(self, skip: int = 0, limit: int = 24) -> list[FoundReport]:
         return (
             self.db.query(FoundReport)
             .filter(FoundReport.status == FoundReportStatus.pending)
             .order_by(FoundReport.created_at.desc())
+            .offset(skip)
+            .limit(limit)
             .all()
         )
 

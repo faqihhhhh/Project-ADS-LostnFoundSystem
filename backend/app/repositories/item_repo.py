@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import Optional
-from app.models.item import Item, ItemFoto, ItemType, ItemCategory, ItemStatus
+from datetime import datetime
+from app.models.item import Item, ItemFoto, ItemType, ItemCategory, ItemStatus, ItemLocation
 
 class ItemRepository:
     def __init__(self, db: Session):
@@ -14,7 +15,12 @@ class ItemRepository:
         tipe: Optional[ItemType] = None,
         kategori: Optional[ItemCategory] = None,
         status: Optional[ItemStatus] = None,
-        q: Optional[str] = None
+        lokasi: Optional[ItemLocation] = None,
+        q: Optional[str] = None,
+        start_date: Optional[datetime] = None,
+        end_date: Optional[datetime] = None,
+        skip: int = 0,
+        limit: int = 24
     ) -> list[Item]:
         query = self.db.query(Item)
         if tipe:
@@ -23,11 +29,22 @@ class ItemRepository:
             query = query.filter(Item.kategori == kategori)
         if status:
             query = query.filter(Item.status == status)
+        if lokasi:
+            query = query.filter(
+                (Item.lokasi_ditemukan == lokasi) |
+                (Item.lokasi_kemungkinan.any(lokasi))
+            )
         if q:
             query = query.filter(
                 Item.nama.ilike(f"%{q}%") | Item.lokasi.ilike(f"%{q}%")
             )
-        return query.order_by(Item.created_at.desc()).all()
+        
+        if start_date:
+            query = query.filter(Item.tanggal >= start_date)
+        if end_date:
+            query = query.filter(Item.tanggal <= end_date)
+
+        return query.order_by(Item.tanggal.desc()).offset(skip).limit(limit).all()
 
     def save(self, item: Item) -> Item:
         self.db.add(item)
