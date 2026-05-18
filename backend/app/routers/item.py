@@ -8,10 +8,10 @@ from app.repositories.notification_repo import NotificationRepository
 from app.services.item_service import ItemService
 from app.services.match_service import MatchService
 from app.services.notification_service import NotificationService
-from app.models.item import ItemType, ItemCategory, ItemStatus
+from app.models.item import ItemType, ItemCategory, ItemStatus, TimePeriod
 from app.models.user import User
 from app.schemas.item import ItemCreate, ItemOut
-from app.core.deps import get_current_mahasiswa, get_current_admin, get_optional_user
+from app.core.deps import get_current_mahasiswa, get_current_admin, get_optional_user, get_pagination_params
 
 router = APIRouter(prefix="/items", tags=["Items"])
 
@@ -32,19 +32,30 @@ def list_barang(
     kategori: Optional[ItemCategory] = Query(None),
     status: Optional[ItemStatus] = Query(None),
     q: Optional[str] = Query(None),
+    period: Optional[TimePeriod] = Query(None),
     service: ItemService = Depends(get_item_service),
-    current_user: Optional[User] = Depends(get_optional_user)
+    current_user: Optional[User] = Depends(get_optional_user),
+    pagination: dict = Depends(get_pagination_params)
 ):
-    return service.get_all(tipe, kategori, status, q, current_user)
+    return service.get_all(
+        tipe=tipe, 
+        kategori=kategori, 
+        status=status, 
+        q=q, 
+        current_user=current_user, 
+        period=period,
+        **pagination
+    )
 
 # ── 2. ADMIN: LIST SEMUA (HARUS DI ATAS {item_id}) ─────────────────────
 # Karena jalurnya statis (/admin/all), diletakkan sebelum jalur dinamis
 @router.get("/admin/all", response_model=List[ItemOut])
 def list_semua_admin(
     service: ItemService = Depends(get_item_service),
-    current_user: User = Depends(get_current_admin)
+    current_user: User = Depends(get_current_admin),
+    pagination: dict = Depends(get_pagination_params)
 ):
-    return service.get_all_for_admin()
+    return service.get_all_for_admin(**pagination)
 
 # ── 3. DETAIL BARANG (DINAMIS) ────────────────────────────────────────
 # Jalur ini menggunakan variabel {item_id}, maka ditaruh di paling bawah kategori GET

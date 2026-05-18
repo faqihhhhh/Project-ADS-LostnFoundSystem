@@ -8,11 +8,13 @@ class ItemMatchRepository:
     def get_by_id(self, match_id: int) -> ItemMatch | None:
         return self.db.query(ItemMatch).filter(ItemMatch.id == match_id).first()
 
-    def get_pending(self) -> list[ItemMatch]:
+    def get_pending(self, skip: int = 0, limit: int = 24) -> list[ItemMatch]:
         return (
             self.db.query(ItemMatch)
             .filter(ItemMatch.status == MatchStatus.pending)
             .order_by(ItemMatch.created_at.desc())
+            .offset(skip)
+            .limit(limit)
             .all()
         )
 

@@ -32,7 +32,8 @@ class MatchService:
             candidates = self.item_repo.get_all(
                 tipe=ItemType.lost,
                 kategori=new_item.kategori,
-                status=ItemStatus.open
+                status=ItemStatus.open,
+                limit=99999  # Cari semua tanpa pagination karena biasanya jumlah LOST lebih banyak
             )
             for lost in candidates:
                 if self._is_lokasi_match(new_item, lost):
@@ -46,7 +47,8 @@ class MatchService:
             candidates = self.item_repo.get_all(
                 tipe=ItemType.found,
                 kategori=new_item.kategori,
-                status=ItemStatus.open
+                status=ItemStatus.open,
+                limit=99999  # Cari semua tanpa pagination karena biasanya jumlah FOUND lebih sedikit
             )
             for found in candidates:
                 if self._is_lokasi_match(found, new_item):
@@ -58,18 +60,10 @@ class MatchService:
         return matches
 
     def _is_lokasi_match(self, found_item: Item, lost_item: Item) -> bool:
-        """Cek apakah lokasi found dan lost berdekatan/sama"""
-        if not found_item.lokasi_ditemukan or not lost_item.lokasi_kemungkinan:
+        if not found_item.lokasi_ditemukan_list or not lost_item.lokasi_kemungkinan_list:
             return False
-
-        lokasi_found = found_item.lokasi_ditemukan.lower()
-        for lokasi in lost_item.lokasi_kemungkinan:
-            # Cek apakah ada kata yang sama (misal: "FEM", "Dramaga", "perpus")
-            kata_found = set(lokasi_found.split())
-            kata_lost  = set(lokasi.lower().split())
-            if kata_found & kata_lost:    # ada irisan kata
-                return True
-        return False
+        # Cek apakah lokasi found ada di dalam daftar lokasi kemungkinan lost
+        return found_item.lokasi_ditemukan_list in lost_item.lokasi_kemungkinan_list
 
     def _build_alasan(self, found_item: Item, lost_item: Item) -> str:
         return (
@@ -90,8 +84,8 @@ class MatchService:
         )
         return self.match_repo.save(match)
 
-    def get_pending(self) -> list[ItemMatch]:
-        return self.match_repo.get_pending()
+    def get_pending(self, skip: int = 0, limit: int = 24) -> list[ItemMatch]:
+        return self.match_repo.get_pending(skip, limit)
 
 
     def _generate_kode(self, length: int = 6) -> str:

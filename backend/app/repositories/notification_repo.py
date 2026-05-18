@@ -5,11 +5,13 @@ class NotificationRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_by_user(self, user_id: int) -> list[Notification]:
+    def get_by_user(self, user_id: int, skip: int = 0, limit: int = 24) -> list[Notification]:
         return (
             self.db.query(Notification)
             .filter(Notification.user_id == user_id)
             .order_by(Notification.created_at.desc())
+            .offset(skip)
+            .limit(limit)
             .all()
         )
 

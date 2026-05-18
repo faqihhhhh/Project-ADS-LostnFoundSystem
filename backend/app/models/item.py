@@ -25,6 +25,58 @@ class ItemCategory(str, enum.Enum):
     botol      = "botol"
     lainnya    = "lainnya"
 
+class TimePeriod(str, enum.Enum):
+    today      = "today"
+    this_week  = "this_week"
+    this_month = "this_month"
+    all_time   = "all_time"
+
+
+class ItemLocation(str, Enum):
+    # Gedung Perkuliahan & Fasilitas Umum
+    CCR = "Common Class Room (CCR)"
+    GKB = "Gedung Kuliah Bersama (GKB)"
+    PERPUSTAKAAN = "Perpustakaan Pusat"
+    MASJID_AL_HURRIYYAH = "Masjid Al-Hurriyyah"
+    GYMNASIUM = "Gymnasium"
+    AUDITORIUM_AHMAD_ANDI = "Auditorium Andi Hakim Nasoetion"
+    
+    # Asrama
+    ASRAMA_PUTRA = "Asrama Putra (Astra)"
+    ASRAMA_PUTRI = "Asrama Putri (Astri)"
+    
+    # Kantin Favorit
+    STEVIA = "Kantin Stevia"
+    UNGU = "Kantin Ungu"
+    BLUE_CORNER = "Blue Corner"
+    YELLOW_CORNER = "Yellow Corner"
+    NAYS = "Kantin Nays"
+    RIMBAWAN = "Kantin Rimbawan"
+    SAPTA = "Kantin Sapta"
+    PLASMA = "Kantin Plasma"
+    KANPAT = "Kantin Empat (Kanpat)"
+    IBU_SAYANG = "Kantin Ibu Sayang"
+    MAKJAN = "Kantin Makjan"
+    
+    # Fakultas
+    FAPERTA = "Fakultas Pertanian (Faperta)"
+    FKH = "Fakultas Kedokteran Hewan (FKH)"
+    FPIK = "Fakultas Perikanan dan Ilmu Kelautan (FPIK)"
+    FAPET = "Fakultas Peternakan (Fapet)"
+    FAHUTAN = "Fakultas Kehutanan dan Lingkungan (Fahutan)"
+    FATETA = "Fakultas Teknologi Pertanian (Fateta)"
+    FMIPA = "Fakultas Matematika dan Ilmu Pengetahuan Alam (FMIPA)"
+    FEM = "Fakultas Ekonomi dan Manajemen (FEM)"
+    FEMA = "Fakultas Ekologi Manusia (FEMA)"
+    SKHB = "Sekolah Kedokteran Hewan dan Biomedis (SKHB)"
+    SB = "Sekolah Bisnis (SB)"
+    SV = "Sekolah Vokasi (SV)"
+    
+    # Lain-lain
+    HALTE_BUS = "Halte Bus / Lintas"
+    JALANAN_KAMPUS = "Area Jalanan Kampus"
+    LAINNYA = "Lainnya"
+
 
 
 def default_expired_at():
@@ -51,6 +103,9 @@ class Item(Base):
     lokasi_ditemukan    = Column(String, nullable=True)
     # Tempat barang disimpan sekarang (misal: pos satpam FEM)
     lokasi_sekarang     = Column(String, nullable=True)
+
+    lokasi_ditemukan_list = Column(Enum(ItemLocation), nullable=True)
+    lokasi_kemungkinan_list = Column(ARRAY(Enum(ItemLocation)), nullable=True)
 
     # Field khusus LOST
     # Bisa beberapa tempat kemungkinan hilang

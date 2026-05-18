@@ -1,9 +1,10 @@
 from fastapi import HTTPException, UploadFile
 from app.repositories.item_repo import ItemRepository
-from app.models.item import Item, ItemFoto, ItemType, ItemCategory, ItemStatus
+from app.models.item import Item, ItemFoto, ItemType, ItemCategory, ItemStatus, TimePeriod
 from app.models.user import User, UserRole
 from app.schemas.item import ItemCreate
 from typing import Optional
+from datetime import datetime, timedelta
 import os, uuid
 
 UPLOAD_DIR = "uploads"
@@ -22,10 +23,33 @@ class ItemService:
         kategori: Optional[ItemCategory],
         status: Optional[ItemStatus],
         q: Optional[str],
-        current_user: Optional[User]
+        current_user: Optional[User],
+        period: Optional[TimePeriod] = None,
+        skip: int = 0,
+        limit: int = 24 
     ) -> list[Item]:
+        start_date, end_date = None, None
+        now = datetime.utcnow()
+
+        if period == TimePeriod.today:
+            start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_date = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+        elif period == TimePeriod.this_week:
+            start_date = now - timedelta(days=7)
+        elif period == TimePeriod.this_month:
+            start_date = now - timedelta(days=30)
+
         # Sembunyikan item expired dan closed dari list publik
-        items = self.item_repo.get_all(tipe, kategori, status, q)
+        items = self.item_repo.get_all(
+            tipe=tipe, 
+            kategori=kategori, 
+            status=status, 
+            q=q, 
+            start_date=start_date,
+            end_date=end_date,
+            skip=skip, 
+            limit=limit
+        )
         result = []
 
         for item in items:
@@ -52,9 +76,9 @@ class ItemService:
 
         return item
 
-    def get_all_for_admin(self) -> list[Item]:
+    def get_all_for_admin(self, skip: int = 0, limit: int = 24) -> list[Item]:
         """Admin bisa lihat semua termasuk expired dan closed"""
-        return self.item_repo.get_all()
+        return self.item_repo.get_all(skip=skip, limit=limit)
 
     def upload_foto(self, item_id: int, file: UploadFile, current_user: User) -> Item:
         item = self.item_repo.get_by_id(item_id)

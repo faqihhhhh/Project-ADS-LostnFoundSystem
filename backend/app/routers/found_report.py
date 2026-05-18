@@ -11,7 +11,7 @@ from app.services.found_report_service import FoundReportService
 from app.services.notification_service import NotificationService
 from app.models.user import User
 from app.schemas.found_report import FoundReportCreate, FoundReportOut
-from app.core.deps import get_current_mahasiswa, get_current_admin
+from app.core.deps import get_current_mahasiswa, get_current_admin, get_pagination_params
 from fastapi import HTTPException
 
 router = APIRouter(prefix="/found-reports", tags=["Found Reports"])
@@ -46,17 +46,19 @@ def upload_foto(
 @router.get("/me", response_model=List[FoundReportOut])
 def laporan_saya(
     service: FoundReportService = Depends(get_service),
-    current_user: User = Depends(get_current_mahasiswa)
+    current_user: User = Depends(get_current_mahasiswa),
+    pagination: dict = Depends(get_pagination_params)
 ):
-    return service.report_repo.get_by_reporter(current_user.id)
+    return service.report_repo.get_by_reporter(current_user.id, **pagination)
 
 # ── Khusus Admin ──────────────────────────────────────────────────────
 @router.get("", response_model=List[FoundReportOut])
 def semua_laporan_pending(
     service: FoundReportService = Depends(get_service),
-    current_user: User = Depends(get_current_admin)
+    current_user: User = Depends(get_current_admin),
+    pagination: dict = Depends(get_pagination_params)
 ):
-    return service.report_repo.get_all_pending()
+    return service.report_repo.get_all_pending(**pagination)
 
 @router.get("/{report_id}/kode")
 def lihat_kode(

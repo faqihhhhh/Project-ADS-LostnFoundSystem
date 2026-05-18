@@ -11,7 +11,7 @@ from app.services.match_service import MatchService
 from app.services.notification_service import NotificationService
 from app.models.item_match import MatchStatus
 from app.models.user import User
-from app.core.deps import get_current_admin
+from app.core.deps import get_current_admin, get_pagination_params
 
 router = APIRouter(prefix="/matches", tags=["Matches"])
 
@@ -35,13 +35,26 @@ class MatchOut(BaseModel):
         from_attributes = True
 
 @router.get("", response_model=List[MatchOut])
-def list_pending(service: MatchService = Depends(get_service), current_user: User = Depends(get_current_admin)):
-    return service.get_pending()
+def list_pending(
+    service: MatchService = Depends(get_service), 
+    current_user: User = Depends(get_current_admin), 
+    pagination: dict = Depends(get_pagination_params)
+    ):
+    return service.get_pending(**pagination)
 
 @router.patch("/{match_id}/confirm", response_model=MatchOut)
-def confirm(match_id: int, catatan: str = "", service: MatchService = Depends(get_service), current_user: User = Depends(get_current_admin)):
+def confirm(
+    match_id: int, 
+    catatan: str = "", 
+    service: MatchService = Depends(get_service), 
+    current_user: User = Depends(get_current_admin)
+    ):
     return service.confirm(match_id, catatan)
 
 @router.patch("/{match_id}/reject", response_model=MatchOut)
-def reject(match_id: int, catatan: str = "", service: MatchService = Depends(get_service), current_user: User = Depends(get_current_admin)):
+def reject(
+    match_id: int, 
+    catatan: str = "", 
+    service: MatchService = Depends(get_service), current_user: User = Depends(get_current_admin)
+    ):
     return service.reject(match_id, catatan)
