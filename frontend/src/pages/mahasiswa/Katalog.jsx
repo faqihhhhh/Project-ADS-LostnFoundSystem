@@ -9,6 +9,51 @@ const KATEGORI = [
   'semua', 'elektronik', 'dompet', 'kunci', 'kartu', 'pakaian', 'tas', 'botol', 'lainnya'
 ]
 
+const LOKASI = [
+  { label: 'Semua Lokasi', value: 'semua' },
+  { label: 'Common Class Room (CCR)', value: 'Common Class Room (CCR)' },
+  { label: 'Gedung Kuliah Bersama (GKB)', value: 'Gedung Kuliah Bersama (GKB)' },
+  { label: 'Perpustakaan Pusat', value: 'Perpustakaan Pusat' },
+  { label: 'Masjid Al-Hurriyyah', value: 'Masjid Al-Hurriyyah' },
+  { label: 'Gymnasium', value: 'Gymnasium' },
+  { label: 'Auditorium Andi Hakim Nasoetion', value: 'Auditorium Andi Hakim Nasoetion' },
+  { label: 'Asrama Putra (Astra)', value: 'Asrama Putra (Astra)' },
+  { label: 'Asrama Putri (Astri)', value: 'Asrama Putri (Astri)' },
+  { label: 'Kantin Stevia', value: 'Kantin Stevia' },
+  { label: 'Kantin Ungu', value: 'Kantin Ungu' },
+  { label: 'Blue Corner', value: 'Blue Corner' },
+  { label: 'Yellow Corner', value: 'Yellow Corner' },
+  { label: 'Kantin Nays', value: 'Kantin Nays' },
+  { label: 'Kantin Rimbawan', value: 'Kantin Rimbawan' },
+  { label: 'Kantin Sapta', value: 'Kantin Sapta' },
+  { label: 'Kantin Plasma', value: 'Kantin Plasma' },
+  { label: 'Kantin Empat (Kanpat)', value: 'Kantin Empat (Kanpat)' },
+  { label: 'Kantin Ibu Sayang', value: 'Kantin Ibu Sayang' },
+  { label: 'Kantin Makjan', value: 'Kantin Makjan' },
+  { label: 'Fakultas Pertanian (Faperta)', value: 'Fakultas Pertanian (Faperta)' },
+  { label: 'Fakultas Kedokteran Hewan (FKH)', value: 'Fakultas Kedokteran Hewan (FKH)' },
+  { label: 'Fakultas Perikanan dan Ilmu Kelautan (FPIK)', value: 'Fakultas Perikanan dan Ilmu Kelautan (FPIK)' },
+  { label: 'Fakultas Peternakan (Fapet)', value: 'Fakultas Peternakan (Fapet)' },
+  { label: 'Fakultas Kehutanan dan Lingkungan (Fahutan)', value: 'Fakultas Kehutanan dan Lingkungan (Fahutan)' },
+  { label: 'Fakultas Teknologi Pertanian (Fateta)', value: 'Fakultas Teknologi Pertanian (Fateta)' },
+  { label: 'Fakultas Matematika dan Ilmu Pengetahuan Alam (FMIPA)', value: 'Fakultas Matematika dan Ilmu Pengetahuan Alam (FMIPA)' },
+  { label: 'Fakultas Ekonomi dan Manajemen (FEM)', value: 'Fakultas Ekonomi dan Manajemen (FEM)' },
+  { label: 'Fakultas Ekologi Manusia (FEMA)', value: 'Fakultas Ekologi Manusia (FEMA)' },
+  { label: 'Sekolah Kedokteran Hewan dan Biomedis (SKHB)', value: 'Sekolah Kedokteran Hewan dan Biomedis (SKHB)' },
+  { label: 'Sekolah Bisnis (SB)', value: 'Sekolah Bisnis (SB)' },
+  { label: 'Sekolah Vokasi (SV)', value: 'Sekolah Vokasi (SV)' },
+  { label: 'Halte Bus / Lintas', value: 'Halte Bus / Lintas' },
+  { label: 'Area Jalanan Kampus', value: 'Area Jalanan Kampus' },
+  { label: 'Lainnya', value: 'Lainnya' },
+]
+
+const PERIODE = [
+  { label: 'Semua Waktu', value: 'all_time' },
+  { label: 'Hari Ini', value: 'today' },
+  { label: 'Minggu Ini', value: 'this_week' },
+  { label: 'Bulan Ini', value: 'this_month' },
+]
+
 export default function Katalog() {
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -17,12 +62,14 @@ export default function Katalog() {
   const [loading, setLoading]   = useState(true)
   const [tipe, setTipe]         = useState('semua')       // semua | LOST | FOUND
   const [kategori, setKategori] = useState('semua')
+  const [lokasi, setLokasi]     = useState('semua')
+  const [period, setPeriod]     = useState('all_time')
   const [search, setSearch]     = useState('')
   const [searchInput, setSearchInput] = useState('')
 
   useEffect(() => {
     fetchItems()
-  }, [tipe, kategori, search])
+  }, [tipe, kategori, lokasi, period, search])
 
   const fetchItems = async () => {
     setLoading(true)
@@ -30,6 +77,8 @@ export default function Katalog() {
       const params = {}
       if (tipe !== 'semua')     params.tipe     = tipe
       if (kategori !== 'semua') params.kategori  = kategori
+      if (lokasi !== 'semua')   params.lokasi    = lokasi
+      if (period !== 'all_time') params.period   = period
       if (search)               params.q         = search
       const res = await api.get('/items', { params })
       setItems(res.data)
@@ -66,9 +115,22 @@ export default function Katalog() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Katalog Barang</h1>
-                <p className="text-sm text-gray-500 mt-0.5">
-                  {items.length} barang ditemukan
-                </p>
+                <div className="flex items-center gap-3 mt-0.5">
+                  <p className="text-sm text-gray-500">
+                    {items.length} barang ditemukan
+                  </p>
+                  {user?.role === 'mahasiswa' && (
+                    <button
+                      onClick={() => navigate('/rekomendasi')}
+                      className="text-xs font-medium text-blue-700 hover:text-blue-800 flex items-center gap-1 bg-blue-50 px-2 py-1 rounded"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      Lihat Rekomendasi Cocok
+                    </button>
+                  )}
+                </div>
               </div>
               {user?.role === 'mahasiswa' && (
                 <button
@@ -86,7 +148,7 @@ export default function Katalog() {
                 type="text"
                 value={searchInput}
                 onChange={e => setSearchInput(e.target.value)}
-                placeholder="Cari nama barang atau lokasi..."
+                placeholder="Cari nama barang..."
                 className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-md text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-700"
               />
               <button
@@ -95,10 +157,16 @@ export default function Katalog() {
               >
                 Cari
               </button>
-              {search && (
+              {(search || kategori !== 'semua' || lokasi !== 'semua' || period !== 'all_time') && (
                 <button
                   type="button"
-                  onClick={() => { setSearch(''); setSearchInput('') }}
+                  onClick={() => { 
+                    setSearch(''); 
+                    setSearchInput('');
+                    setKategori('semua');
+                    setLokasi('semua');
+                    setPeriod('all_time');
+                  }}
                   className="px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-500 hover:bg-gray-100"
                 >
                   Reset
@@ -107,7 +175,7 @@ export default function Katalog() {
             </form>
 
             {/* Filter Tipe Toggle */}
-            <div className="flex gap-2 mb-4">
+            <div className="flex gap-2 mb-6">
               {[
                 { label: 'Semua', value: 'semua' },
                 { label: 'Barang Hilang', value: 'LOST' },
@@ -129,26 +197,74 @@ export default function Katalog() {
               ))}
             </div>
 
-            {/* Filter Kategori */}
-            <div className="relative mb-6">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Kategori</label>
-              <div className="relative">
-                <select
-                  value={kategori}
-                  onChange={e => setKategori(e.target.value)}
-                  className="w-full appearance-none bg-white border border-gray-200 rounded-md px-3 py-2 pr-9 text-sm text-gray-700 capitalize cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition-colors"
-                >
-                  {KATEGORI.map(k => (
-                    <option key={k} value={k} className="capitalize">
-                      {k.charAt(0).toUpperCase() + k.slice(1)}
-                    </option>
-                  ))}
-                </select>
-                {/* Chevron icon */}
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-400">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
+            {/* Dropdown Filters Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+              {/* Filter Kategori */}
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Kategori</label>
+                <div className="relative">
+                  <select
+                    value={kategori}
+                    onChange={e => setKategori(e.target.value)}
+                    className="w-full appearance-none bg-white border border-gray-200 rounded-md px-3 py-2 pr-9 text-sm text-gray-700 capitalize cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-700 transition-colors"
+                  >
+                    {KATEGORI.map(k => (
+                      <option key={k} value={k} className="capitalize">
+                        {k.charAt(0).toUpperCase() + k.slice(1)}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-400">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Filter Lokasi */}
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Lokasi</label>
+                <div className="relative">
+                  <select
+                    value={lokasi}
+                    onChange={e => setLokasi(e.target.value)}
+                    className="w-full appearance-none bg-white border border-gray-200 rounded-md px-3 py-2 pr-9 text-sm text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-700 transition-colors"
+                  >
+                    {LOKASI.map(l => (
+                      <option key={l.value} value={l.value}>
+                        {l.label}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-400">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Filter Waktu */}
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Waktu</label>
+                <div className="relative">
+                  <select
+                    value={period}
+                    onChange={e => setPeriod(e.target.value)}
+                    className="w-full appearance-none bg-white border border-gray-200 rounded-md px-3 py-2 pr-9 text-sm text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-700 transition-colors"
+                  >
+                    {PERIODE.map(p => (
+                      <option key={p.value} value={p.value}>
+                        {p.label}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-400">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </div>
               </div>
             </div>

@@ -28,8 +28,11 @@ export default function Notifikasi() {
     try {
       await api.patch('/notifications/read')
       setNotifs(prev => prev.map(n => ({ ...n, is_read: true })))
-    } catch {}
-    finally { setMarking(false) }
+    } catch (err) {
+      console.error('Failed to mark all as read:', err)
+    } finally {
+      setMarking(false)
+    }
   }
 
   const unreadCount = notifs.filter(n => !n.is_read).length

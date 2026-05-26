@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import HomeNavbar from '../components/shared/HomeNavbar'
+import Navbar from '../components/shared/Navbar'
 
 export default function HomePage() {
   const navigate = useNavigate()
@@ -58,7 +58,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-white font-sans">
-      <HomeNavbar />
+      <Navbar />
 
       {/* ── HERO ── */}
       <section
@@ -186,7 +186,7 @@ export default function HomePage() {
                 to="/login"
                 className="bg-blue-600 border border-blue-500 text-white font-medium px-6 py-3 rounded-lg hover:bg-blue-500 transition-colors"
               >
-                Login / Daftar
+                Login
               </Link>
             )}
           </div>

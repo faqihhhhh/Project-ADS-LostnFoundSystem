@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from app.database import get_db
 from app.repositories.found_report_repo import FoundReportRepository
 from app.repositories.item_repo import ItemRepository
@@ -10,9 +10,9 @@ from app.repositories.notification_repo import NotificationRepository
 from app.services.found_report_service import FoundReportService
 from app.services.notification_service import NotificationService
 from app.models.user import User
+from app.models.item import IPBLocation
 from app.schemas.found_report import FoundReportCreate, FoundReportOut
 from app.core.deps import get_current_mahasiswa, get_current_admin, get_pagination_params
-from fastapi import HTTPException
 
 router = APIRouter(prefix="/found-reports", tags=["Found Reports"])
 
@@ -28,11 +28,24 @@ def get_service(db: Session = Depends(get_db)) -> FoundReportService:
 # ── Khusus Mahasiswa ──────────────────────────────────────────────────
 @router.post("", response_model=FoundReportOut)
 def ajukan(
-    payload: FoundReportCreate,
+    lost_item_id: int = Form(...),
+    deskripsi: str = Form(...),
+    lokasi_sekarang: IPBLocation = Form(...),
+    foto: Optional[UploadFile] = File(None),
     service: FoundReportService = Depends(get_service),
     current_user: User = Depends(get_current_mahasiswa)
 ):
-    return service.ajukan(payload, current_user)
+    payload = FoundReportCreate(
+        lost_item_id=lost_item_id,
+        deskripsi=deskripsi,
+        lokasi_sekarang=lokasi_sekarang
+    )
+    report = service.ajukan(payload, current_user)
+    
+    if foto:
+        service.upload_foto(report.id, foto, current_user)
+        
+    return report
 
 @router.post("/{report_id}/foto", response_model=FoundReportOut)
 def upload_foto(

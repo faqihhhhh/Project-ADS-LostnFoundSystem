@@ -4,16 +4,13 @@ import api from '../services/api'
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
+  const [user, setUser] = useState(() => {
     const token = localStorage.getItem('token')
     const role  = localStorage.getItem('role')
     const nama  = localStorage.getItem('nama')
-    if (token) setUser({ token, role, nama })
-    setLoading(false)
-  }, [])
+    return token ? { token, role, nama } : null
+  })
+  const [loading, setLoading] = useState(false)
 
   const login = async (username, password) => {
     const res = await api.post('/auth/login', { username, password })

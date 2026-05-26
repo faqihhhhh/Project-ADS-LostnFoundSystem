@@ -1,11 +1,13 @@
 from fastapi import HTTPException
 from app.repositories.item_match_repo import ItemMatchRepository
 from app.repositories.item_repo import ItemRepository
+from app.repositories.user_repo import UserRepository
+from app.repositories.point_log_repo import PointLogRepository
 from app.repositories.notification_repo import NotificationRepository
 from app.models.item_match import ItemMatch, MatchStatus
 from app.models.item import Item, ItemType, ItemStatus
 from app.models.notification import Notification
-from app.routers import match
+from app.models.point_log import PointLog
 from app.services.notification_service import NotificationService
 import secrets, string
 
@@ -14,10 +16,14 @@ class MatchService:
         self,
         match_repo: ItemMatchRepository,
         item_repo: ItemRepository,
+        user_repo: UserRepository,
+        point_log_repo: PointLogRepository,
         notif_service: NotificationService
     ):
         self.match_repo    = match_repo
         self.item_repo     = item_repo
+        self.user_repo     = user_repo
+        self.point_log_repo = point_log_repo
         self.notif_service = notif_service
 
     def auto_detect(self, new_item: Item) -> list[ItemMatch]:
@@ -105,23 +111,42 @@ class MatchService:
         match.found_item.status = ItemStatus.closed
         match.lost_item.status  = ItemStatus.closed
 
-    # Notifikasi ke pemilik barang hilang — sertakan kode pengambilan
+        # Tambah poin ke penemu
+        penemu = self.user_repo.get_by_id(match.found_item.user_id)
+        if penemu:
+            penemu.poin += 10
+            self.user_repo.save(penemu)
+            self.point_log_repo.save(PointLog(
+                user_id=penemu.id,
+                jumlah=10,
+                alasan=f"Barang temuan '{match.found_item.nama_publik}' cocok dengan laporan kehilangan"
+            ))
+
+        # Notifikasi ke pemilik barang hilang — sertakan kode pengambilan
+        pesan_pemilik = (
+            f"Admin mengkonfirmasi barang '{match.lost_item.nama_publik}' telah ditemukan. "
+            f"Lokasi barang: {match.found_item.lokasi_sekarang}. "
+            f"Kode pengambilan: {kode}. "
+            f"Tunjukkan kode ini ke petugas."
+        )
+        if catatan:
+            pesan_pemilik += f"\n\nCatatan Admin: {catatan}"
+
         self.notif_service.kirim(
             user_id=match.lost_item.user_id,
             judul="Barang kamu ditemukan!",
-            pesan=(
-                f"Admin mengkonfirmasi barang '{match.lost_item.nama_publik}' telah ditemukan. "
-                f"Lokasi barang: {match.found_item.lokasi_sekarang}. "
-                f"Kode pengambilan: {kode}. "
-                f"Tunjukkan kode ini ke petugas."
-            )
+            pesan=pesan_pemilik
         )
 
         # Notifikasi ke penemu
+        pesan_penemu = f"Barang '{match.found_item.nama_publik}' telah dikonfirmasi dan akan dikembalikan ke pemiliknya. Kamu mendapat +10 poin. Terima kasih!"
+        if catatan:
+            pesan_penemu += f"\n\nCatatan Admin: {catatan}"
+
         self.notif_service.kirim(
             user_id=match.found_item.user_id,
             judul="Pemilik barang temuanmu ditemukan!",
-            pesan=f"Barang '{match.found_item.nama_publik}' telah dikonfirmasi dan akan dikembalikan ke pemiliknya. Terima kasih!"
+            pesan=pesan_penemu
         )
 
         return self.match_repo.save(match)
@@ -136,4 +161,25 @@ class MatchService:
 
         match.status = MatchStatus.rejected
         match.catatan_admin = catatan
+
+        # Notifikasi ke penemu (found_item owner)
+        pesan_penemu = f"Kecocokan otomatis untuk barang temuanmu '{match.found_item.nama_publik}' ditolak oleh admin."
+        if catatan:
+            pesan_penemu += f"\n\nCatatan Admin: {catatan}"
+        self.notif_service.kirim(
+            user_id=match.found_item.user_id,
+            judul="Kecocokan barang ditolak",
+            pesan=pesan_penemu
+        )
+
+        # Notifikasi ke pemilik (lost_item owner)
+        pesan_pemilik = f"Kecocokan otomatis untuk barang hilangmu '{match.lost_item.nama_publik}' ditolak oleh admin."
+        if catatan:
+            pesan_pemilik += f"\n\nCatatan Admin: {catatan}"
+        self.notif_service.kirim(
+            user_id=match.lost_item.user_id,
+            judul="Kecocokan barang ditolak",
+            pesan=pesan_pemilik
+        )
+
         return self.match_repo.save(match)

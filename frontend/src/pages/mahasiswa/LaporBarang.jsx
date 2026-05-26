@@ -5,6 +5,51 @@ import api from '../../services/api'
 
 const KATEGORI = ['elektronik', 'dompet', 'kunci', 'kartu', 'pakaian', 'tas', 'botol', 'lainnya']
 
+const LOKASI_OPTIONS = [
+  'Common Class Room (CCR)', 'Gedung Kuliah Bersama (GKB)', 'Perpustakaan Pusat',
+  'Masjid Al-Hurriyyah', 'Gymnasium', 'Auditorium Andi Hakim Nasoetion',
+  'Asrama Putra (Astra)', 'Asrama Putri (Astri)', 'Kantin Stevia', 'Kantin Ungu',
+  'Blue Corner', 'Yellow Corner', 'Kantin Nays', 'Kantin Rimbawan', 'Kantin Sapta',
+  'Kantin Plasma', 'Kantin Empat (Kanpat)', 'Kantin Ibu Sayang', 'Kantin Makjan',
+  'Fakultas Pertanian (Faperta)', 'Fakultas Kedokteran Hewan (FKH)',
+  'Fakultas Perikanan dan Ilmu Kelautan (FPIK)', 'Fakultas Peternakan (Fapet)',
+  'Fakultas Kehutanan dan Lingkungan (Fahutan)', 'Fakultas Teknologi Pertanian (Fateta)',
+  'Fakultas Matematika dan Ilmu Pengetahuan Alam (FMIPA)', 'Fakultas Ekonomi dan Manajemen (FEM)',
+  'Fakultas Ekologi Manusia (FEMA)', 'Sekolah Kedokteran Hewan dan Biomedis (SKHB)',
+  'Sekolah Bisnis (SB)', 'Sekolah Vokasi (SV)', 'Halte Bus / Lintas',
+  'Area Jalanan Kampus', 'Lainnya'
+]
+
+const IPB_LOCATIONS = [
+  { label: '--- POS SATPAM FAKULTAS ---', value: '', disabled: true },
+  { label: 'Pos Satpam Faperta', value: 'Pos Satpam Faperta' },
+  { label: 'Pos Satpam SKHB', value: 'Pos Satpam SKHB' },
+  { label: 'Pos Satpam FPIK', value: 'Pos Satpam FPIK' },
+  { label: 'Pos Satpam Fapet', value: 'Pos Satpam Fapet' },
+  { label: 'Pos Satpam Fahutan', value: 'Pos Satpam Fahutan' },
+  { label: 'Pos Satpam Fateta', value: 'Pos Satpam Fateta' },
+  { label: 'Pos Satpam FMIPA', value: 'Pos Satpam FMIPA' },
+  { label: 'Pos Satpam FEM', value: 'Pos Satpam FEM' },
+  { label: 'Pos Satpam Fema', value: 'Pos Satpam Fema' },
+  { label: '--- GEDUNG & FASILITAS PUSAT ---', value: '', disabled: true },
+  { label: 'Meja Informasi CCR Lantai 1', value: 'Meja Informasi CCR Lantai 1' },
+  { label: 'Meja Sirkulasi Perpustakaan Pusat', value: 'Meja Sirkulasi Perpustakaan Pusat' },
+  { label: 'Lobi Utama Gedung Kuliah Bersama (GKB)', value: 'Lobi Utama Gedung Kuliah Bersama (GKB)' },
+  { label: '--- FASILITAS UMUM & IBADAH ---', value: '', disabled: true },
+  { label: 'Sekretariat Masjid Al-Hurriyyah', value: 'Sekretariat Masjid Al-Hurriyyah' },
+  { label: 'Pos Keamanan Pintu Utama GWW', value: 'Pos Keamanan Pintu Utama GWW' },
+  { label: 'Ruang Pengelola Gymnasium', value: 'Ruang Pengelola Gymnasium' },
+  { label: 'Resepsionis Klinik IPB Dramaga', value: 'Resepsionis Klinik IPB Dramaga' },
+  { label: '--- PUSAT ADMINISTRASI ---', value: '', disabled: true },
+  { label: 'Pos Pengamanan Lobi Rektorat AHN', value: 'Pos Pengamanan Lobi Rektorat AHN' },
+  { label: 'Sekretariat BEM KM IPB (Student Center)', value: 'Sekretariat BEM KM IPB (Student Center)' },
+  { label: '--- ASRAMA & TRANSPORTASI ---', value: '', disabled: true },
+  { label: 'Kantor Pengelola Asrama PKU Putra', value: 'Kantor Pengelola Asrama PKU Putra' },
+  { label: 'Kantor Pengelola Asrama PKU Putri', value: 'Kantor Pengelola Asrama PKU Putri' },
+  { label: 'Pos Penjagaan Asrama Sylvapinus', value: 'Pos Penjagaan Asrama Sylvapinus' },
+  { label: 'Shelter Bus Kampus Rektorat', value: 'Shelter Bus Kampus Rektorat' },
+]
+
 export default function LaporBarang() {
   const navigate = useNavigate()
 
@@ -18,9 +63,10 @@ export default function LaporBarang() {
     kategori:           '',
     nama_publik:        '',
     deskripsi_detail:   '',
+    lokasi_ditemukan_list: '',
     lokasi_ditemukan:   '',
     lokasi_sekarang:    '',
-    lokasi_kemungkinan: [''],
+    lokasi_kemungkinan_pasangan: [{ enum: '', detail: '' }],
     tanggal:            '',
   })
 
@@ -38,21 +84,21 @@ export default function LaporBarang() {
     setError('')
   }
 
-  const handleLokasi = (index, value) => {
-    const updated = [...form.lokasi_kemungkinan]
-    updated[index] = value
-    setForm({ ...form, lokasi_kemungkinan: updated })
+  const handleLokasiPasangan = (index, field, value) => {
+    const updated = [...form.lokasi_kemungkinan_pasangan]
+    updated[index][field] = value
+    setForm({ ...form, lokasi_kemungkinan_pasangan: updated })
   }
 
   const addLokasi = () => {
-    if (form.lokasi_kemungkinan.length < 5) {
-      setForm({ ...form, lokasi_kemungkinan: [...form.lokasi_kemungkinan, ''] })
+    if (form.lokasi_kemungkinan_pasangan.length < 5) {
+      setForm({ ...form, lokasi_kemungkinan_pasangan: [...form.lokasi_kemungkinan_pasangan, { enum: '', detail: '' }] })
     }
   }
 
   const removeLokasi = (index) => {
-    const updated = form.lokasi_kemungkinan.filter((_, i) => i !== index)
-    setForm({ ...form, lokasi_kemungkinan: updated.length ? updated : [''] })
+    const updated = form.lokasi_kemungkinan_pasangan.filter((_, i) => i !== index)
+    setForm({ ...form, lokasi_kemungkinan_pasangan: updated.length ? updated : [{ enum: '', detail: '' }] })
   }
 
   const handleFotoChange = (e) => {
@@ -72,11 +118,11 @@ export default function LaporBarang() {
     if (!form.nama_publik) return 'Nama barang wajib diisi'
     if (!form.tanggal)     return 'Tanggal wajib diisi'
     if (tipe === 'FOUND') {
-      if (!form.lokasi_ditemukan) return 'Lokasi ditemukan wajib diisi'
+      if (!form.lokasi_ditemukan_list) return 'Lokasi ditemukan wajib dipilih'
       if (!form.lokasi_sekarang)  return 'Lokasi barang sekarang wajib diisi'
     }
     if (tipe === 'LOST') {
-      const valid = form.lokasi_kemungkinan.filter(l => l.trim())
+      const valid = form.lokasi_kemungkinan_pasangan.filter(l => l.enum || l.detail.trim())
       if (!valid.length) return 'Minimal satu lokasi kemungkinan wajib diisi'
     }
     return null
@@ -98,10 +144,16 @@ export default function LaporBarang() {
         tanggal:          new Date(form.tanggal).toISOString(),
       }
       if (tipe === 'FOUND') {
-        body.lokasi_ditemukan = form.lokasi_ditemukan
-        body.lokasi_sekarang  = form.lokasi_sekarang
+        body.lokasi_ditemukan_list = form.lokasi_ditemukan_list
+        body.lokasi_ditemukan      = form.lokasi_ditemukan || null
+        body.lokasi_sekarang       = form.lokasi_sekarang
       } else {
-        body.lokasi_kemungkinan = form.lokasi_kemungkinan.filter(l => l.trim())
+        body.lokasi_kemungkinan_list = form.lokasi_kemungkinan_pasangan
+          .map(l => l.enum)
+          .filter(e => e !== '')
+        body.lokasi_kemungkinan = form.lokasi_kemungkinan_pasangan
+          .map(l => l.detail)
+          .filter(d => d.trim() !== '')
       }
 
       const res = await api.post('/items', body)
@@ -115,11 +167,16 @@ export default function LaporBarang() {
   }
 
   const handleUploadFoto = async () => {
-    if (!fotoFiles.length && !buktiFiles.length) {
-      setStep(3)
+    if (!fotoFiles.length) {
+      setError('Foto barang wajib diunggah')
+      return
+    }
+    if (tipe === 'LOST' && !buktiFiles.length) {
+      setError('Bukti kepemilikan wajib diunggah')
       return
     }
     setUploadLoading(true)
+    setError('')
     try {
       // Upload foto barang
       for (const file of fotoFiles) {
@@ -293,31 +350,54 @@ export default function LaporBarang() {
               {/* Field khusus FOUND */}
               {tipe === 'FOUND' && (
                 <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Lokasi Ditemukan <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="lokasi_ditemukan"
-                      value={form.lokasi_ditemukan}
-                      onChange={handleChange}
-                      placeholder="Cth: Kantin Gedung FEM Lt. 1"
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-md text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-700"
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Lokasi Ditemukan <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        name="lokasi_ditemukan_list"
+                        value={form.lokasi_ditemukan_list}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-md text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-700"
+                      >
+                        <option value="">Pilih lokasi...</option>
+                        {LOKASI_OPTIONS.map(loc => (
+                          <option key={loc} value={loc}>{loc}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Detail Lokasi
+                      </label>
+                      <input
+                        type="text"
+                        name="lokasi_ditemukan"
+                        value={form.lokasi_ditemukan}
+                        onChange={handleChange}
+                        placeholder="Cth: Meja Pojok, Lantai 1"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-md text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-700"
+                      />
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Barang Sekarang Ada di Mana? <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="text"
+                    <select
                       name="lokasi_sekarang"
                       value={form.lokasi_sekarang}
                       onChange={handleChange}
-                      placeholder="Cth: Pos Satpam Gedung FEM"
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-md text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-700"
-                    />
+                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-md text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-700"
+                    >
+                      <option value="">Pilih lokasi penyimpanan...</option>
+                      {IPB_LOCATIONS.map((loc, i) => (
+                        <option key={i} value={loc.value} disabled={loc.disabled}>
+                          {loc.label}
+                        </option>
+                      ))}
+                    </select>
                     <p className="text-xs text-gray-400 mt-1">
                       Informasi ini akan diberikan ke pemilik barang setelah klaim disetujui.
                     </p>
@@ -331,38 +411,65 @@ export default function LaporBarang() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Kemungkinan Lokasi Hilang <span className="text-red-500">*</span>
                   </label>
-                  <div className="space-y-2">
-                    {form.lokasi_kemungkinan.map((lok, i) => (
-                      <div key={i} className="flex gap-2">
-                        <input
-                          type="text"
-                          value={lok}
-                          onChange={e => handleLokasi(i, e.target.value)}
-                          placeholder={`Lokasi ${i + 1} — Cth: Gedung FEM, Perpustakaan LSI`}
-                          className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-md text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-700"
-                        />
-                        {form.lokasi_kemungkinan.length > 1 && (
-                          <button type="button" onClick={() => removeLokasi(i)}
-                            className="text-gray-400 hover:text-red-500 px-2">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <div className="space-y-3">
+                    {form.lokasi_kemungkinan_pasangan.map((pas, i) => (
+                      <div key={i} className="flex flex-col sm:flex-row gap-2 p-3 bg-gray-50 rounded-md border border-gray-100 relative">
+                        <div className="flex-1">
+                          <label className="block text-[10px] uppercase tracking-wider font-bold text-gray-400 mb-1">Lokasi Area</label>
+                          <select
+                            value={pas.enum}
+                            onChange={e => handleLokasiPasangan(i, 'enum', e.target.value)}
+                            className="w-full px-3 py-1.5 bg-white border border-gray-200 rounded text-sm text-gray-900 focus:outline-none"
+                          >
+                            <option value="">Pilih area...</option>
+                            {LOKASI_OPTIONS.map(loc => (
+                              <option key={loc} value={loc}>{loc}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="flex-1">
+                          <label className="block text-[10px] uppercase tracking-wider font-bold text-gray-400 mb-1">Detail (Opsional)</label>
+                          <input
+                            type="text"
+                            value={pas.detail}
+                            onChange={e => handleLokasiPasangan(i, 'detail', e.target.value)}
+                            placeholder="Cth: Dekat toilet, Ruang 2.01"
+                            className="w-full px-3 py-1.5 bg-white border border-gray-200 rounded text-sm placeholder-gray-400 focus:outline-none"
+                          />
+                        </div>
+                        {form.lokasi_kemungkinan_pasangan.length > 1 && (
+                          <button 
+                            type="button" 
+                            onClick={() => removeLokasi(i)}
+                            className="absolute -top-2 -right-2 bg-white border border-gray-200 text-gray-400 hover:text-red-500 rounded-full w-6 h-6 flex items-center justify-center shadow-sm"
+                          >
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                           </button>
                         )}
                       </div>
                     ))}
                   </div>
-                  {form.lokasi_kemungkinan.length < 5 && (
+                  {form.lokasi_kemungkinan_pasangan.length < 5 && (
                     <button type="button" onClick={addLokasi}
-                      className="mt-2 text-sm text-blue-700 hover:underline flex items-center gap-1">
+                      className="mt-3 text-sm text-blue-700 font-medium hover:underline flex items-center gap-1"
+                    >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                       </svg>
-                      Tambah lokasi
+                      Tambah lokasi lain
                     </button>
                   )}
                 </div>
               )}
+
+              {/* Datalist for locations */}
+              <datalist id="lokasi-list">
+                {LOKASI_OPTIONS.map(loc => (
+                  <option key={loc} value={loc} />
+                ))}
+              </datalist>
 
               {/* Error */}
               {error && (
@@ -391,14 +498,16 @@ export default function LaporBarang() {
               <div className="px-4 py-3 bg-blue-50 border border-blue-200 rounded-md">
                 <p className="text-sm text-blue-700 font-medium">Laporan berhasil disimpan!</p>
                 <p className="text-xs text-blue-600 mt-0.5">
-                  Sekarang upload foto untuk mempermudah identifikasi. Bisa dilewati.
+                  {tipe === 'LOST' 
+                    ? 'Sekarang upload foto barang dan bukti kepemilikan. Keduanya wajib diunggah.'
+                    : 'Sekarang upload foto barang. Foto barang wajib diunggah.'}
                 </p>
               </div>
 
               {/* Upload Foto Barang */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Foto Barang
+                  Foto Barang <span className="text-red-500">*</span>
                 </label>
                 <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-200 rounded-md cursor-pointer hover:border-blue-700 hover:bg-blue-50 transition-colors">
                   <svg className="w-8 h-8 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -423,7 +532,7 @@ export default function LaporBarang() {
               {tipe === 'LOST' && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Bukti Kepemilikan
+                    Bukti Kepemilikan <span className="text-red-500">*</span>
                     <span className="text-xs text-gray-400 font-normal ml-2">
                       Struk, foto lama, dus, atau dokumen apapun
                     </span>
@@ -453,12 +562,8 @@ export default function LaporBarang() {
               )}
 
               <div className="flex gap-2 pt-2">
-                <button type="button" onClick={() => setStep(3)}
-                  className="flex-1 border border-gray-200 text-gray-600 text-sm font-medium py-2.5 rounded-md hover:bg-gray-50">
-                  Lewati
-                </button>
                 <button onClick={handleUploadFoto} disabled={uploadLoading}
-                  className="flex-1 bg-blue-700 text-white text-sm font-medium py-2.5 rounded-md hover:bg-blue-800 disabled:opacity-60">
+                  className="w-full bg-blue-700 text-white text-sm font-medium py-2.5 rounded-md hover:bg-blue-800 disabled:opacity-60">
                   {uploadLoading ? 'Mengupload...' : 'Upload & Selesai'}
                 </button>
               </div>
@@ -488,11 +593,12 @@ export default function LaporBarang() {
                   Lihat Laporan
                 </button>
                 <button
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate('/katalog')}
                   className="border border-gray-200 text-gray-600 text-sm font-medium px-6 py-2.5 rounded-md hover:bg-gray-50"
                 >
                   Kembali ke Katalog
                 </button>
+
               </div>
             </div>
           )}

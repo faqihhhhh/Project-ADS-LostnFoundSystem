@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
 })
 
 // Otomatis sisipkan token di setiap request
@@ -15,7 +15,9 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    const isLoginRequest = err.config.url.includes('/auth/login')
+    
+    if (err.response?.status === 401 && !isLoginRequest) {
       localStorage.clear()
       window.location.href = '/login'
     }

@@ -5,10 +5,43 @@ import Badge from '../../components/shared/Badge'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../services/api'
 
+const IPB_LOCATIONS = [
+  { label: '--- POS SATPAM FAKULTAS ---', value: '', disabled: true },
+  { label: 'Pos Satpam Faperta', value: 'Pos Satpam Faperta' },
+  { label: 'Pos Satpam SKHB', value: 'Pos Satpam SKHB' },
+  { label: 'Pos Satpam FPIK', value: 'Pos Satpam FPIK' },
+  { label: 'Pos Satpam Fapet', value: 'Pos Satpam Fapet' },
+  { label: 'Pos Satpam Fahutan', value: 'Pos Satpam Fahutan' },
+  { label: 'Pos Satpam Fateta', value: 'Pos Satpam Fateta' },
+  { label: 'Pos Satpam FMIPA', value: 'Pos Satpam FMIPA' },
+  { label: 'Pos Satpam FEM', value: 'Pos Satpam FEM' },
+  { label: 'Pos Satpam Fema', value: 'Pos Satpam Fema' },
+  { label: '--- GEDUNG & FASILITAS PUSAT ---', value: '', disabled: true },
+  { label: 'Meja Informasi CCR Lantai 1', value: 'Meja Informasi CCR Lantai 1' },
+  { label: 'Meja Sirkulasi Perpustakaan Pusat', value: 'Meja Sirkulasi Perpustakaan Pusat' },
+  { label: 'Lobi Utama Gedung Kuliah Bersama (GKB)', value: 'Lobi Utama Gedung Kuliah Bersama (GKB)' },
+  { label: '--- FASILITAS UMUM & IBADAH ---', value: '', disabled: true },
+  { label: 'Sekretariat Masjid Al-Hurriyyah', value: 'Sekretariat Masjid Al-Hurriyyah' },
+  { label: 'Pos Keamanan Pintu Utama GWW', value: 'Pos Keamanan Pintu Utama GWW' },
+  { label: 'Ruang Pengelola Gymnasium', value: 'Ruang Pengelola Gymnasium' },
+  { label: 'Resepsionis Klinik IPB Dramaga', value: 'Resepsionis Klinik IPB Dramaga' },
+  { label: '--- PUSAT ADMINISTRASI ---', value: '', disabled: true },
+  { label: 'Pos Pengamanan Lobi Rektorat AHN', value: 'Pos Pengamanan Lobi Rektorat AHN' },
+  { label: 'Sekretariat BEM KM IPB (Student Center)', value: 'Sekretariat BEM KM IPB (Student Center)' },
+  { label: '--- ASRAMA & TRANSPORTASI ---', value: '', disabled: true },
+  { label: 'Kantor Pengelola Asrama PKU Putra', value: 'Kantor Pengelola Asrama PKU Putra' },
+  { label: 'Kantor Pengelola Asrama PKU Putri', value: 'Kantor Pengelola Asrama PKU Putri' },
+  { label: 'Pos Penjagaan Asrama Sylvapinus', value: 'Pos Penjagaan Asrama Sylvapinus' },
+  { label: 'Shelter Bus Kampus Rektorat', value: 'Shelter Bus Kampus Rektorat' },
+]
+
 export default function DetailBarang() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
+
+  const backPath = user?.role === 'admin' ? '/admin/barang' : '/katalog'
+  const backLabel = user?.role === 'admin' ? 'Kelola Barang' : 'Katalog'
 
   const [item, setItem]           = useState(null)
   const [loading, setLoading]     = useState(true)
@@ -17,16 +50,34 @@ export default function DetailBarang() {
   // Modal Klaim
   const [showKlaim, setShowKlaim]         = useState(false)
   const [klaimForm, setKlaimForm]         = useState({ deskripsi_ciri: '' })
+  const [klaimFiles, setKlaimFiles]       = useState([])
+  const [klaimPreviews, setKlaimPreviews] = useState([])
   const [klaimLoading, setKlaimLoading]   = useState(false)
   const [klaimError, setKlaimError]       = useState('')
   const [klaimSuccess, setKlaimSuccess]   = useState(false)
 
+  const handleKlaimFileChange = (e) => {
+    const files = Array.from(e.target.files)
+    setKlaimFiles(files)
+    setKlaimPreviews(files.map(f => URL.createObjectURL(f)))
+  }
+
   // Modal Found Report (Saya Punya Ini)
   const [showReport, setShowReport]       = useState(false)
   const [reportForm, setReportForm]       = useState({ deskripsi: '', lokasi_sekarang: '' })
+  const [reportFile, setReportFile]       = useState(null)
+  const [reportPreview, setReportPreview] = useState(null)
   const [reportLoading, setReportLoading] = useState(false)
   const [reportError, setReportError]     = useState('')
   const [reportSuccess, setReportSuccess] = useState(false)
+
+  const handleReportFileChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      setReportFile(file)
+      setReportPreview(URL.createObjectURL(file))
+    }
+  }
 
   useEffect(() => {
     fetchDetail()
@@ -38,7 +89,7 @@ export default function DetailBarang() {
       const res = await api.get(`/items/${id}`)
       setItem(res.data)
     } catch {
-      navigate('/')
+      navigate(backPath)
     } finally {
       setLoading(false)
     }
@@ -54,10 +105,25 @@ export default function DetailBarang() {
       setKlaimError('Deskripsi ciri wajib diisi')
       return
     }
+    if (!klaimFiles.length) {
+      setKlaimError('Wajib mengunggah minimal satu foto bukti kepemilikan')
+      return
+    }
     setKlaimLoading(true)
     setKlaimError('')
     try {
-      await api.post('/claims', { item_id: item.id, deskripsi_ciri: klaimForm.deskripsi_ciri })
+      const res = await api.post('/claims', { item_id: item.id, deskripsi_ciri: klaimForm.deskripsi_ciri })
+      const claimId = res.data.id
+
+      // Upload foto bukti jika ada
+      for (const file of klaimFiles) {
+        const fd = new FormData()
+        fd.append('file', file)
+        await api.post(`/claims/${claimId}/bukti`, fd, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+      }
+
       setKlaimSuccess(true)
       fetchDetail()
     } catch (err) {
@@ -73,13 +139,21 @@ export default function DetailBarang() {
       setReportError('Semua field wajib diisi')
       return
     }
+    if (!reportFile) {
+      setReportError('Foto bukti penemuan wajib diunggah')
+      return
+    }
     setReportLoading(true)
     setReportError('')
     try {
-      await api.post('/found-reports', {
-        lost_item_id: item.id,
-        deskripsi: reportForm.deskripsi,
-        lokasi_sekarang: reportForm.lokasi_sekarang
+      const formData = new FormData()
+      formData.append('lost_item_id', item.id)
+      formData.append('deskripsi', reportForm.deskripsi)
+      formData.append('lokasi_sekarang', reportForm.lokasi_sekarang)
+      formData.append('foto', reportFile)
+
+      await api.post('/found-reports', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       })
       setReportSuccess(true)
       fetchDetail()
@@ -123,7 +197,7 @@ export default function DetailBarang() {
 
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-          <button onClick={() => navigate('/')} className="hover:text-blue-700">Katalog</button>
+          <button onClick={() => navigate(backPath)} className="hover:text-blue-700">{backLabel}</button>
           <span>/</span>
           <span className="text-gray-900 font-medium">{item.nama_publik}</span>
         </div>
@@ -218,8 +292,8 @@ export default function DetailBarang() {
                   </div>
                 )}
 
-                {/* Lokasi Sekarang FOUND — hanya mahasiswa login */}
-                {item.tipe === 'FOUND' && item.lokasi_sekarang && isMahasiswa && (
+                {/* Lokasi Sekarang FOUND — hanya owner (penemu) atau admin */}
+                {item.tipe === 'FOUND' && item.lokasi_sekarang && (isOwner || user?.role === 'admin') && (
                   <div className="flex items-start gap-3">
                     <svg className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -321,10 +395,10 @@ export default function DetailBarang() {
                 )}
 
                 <button
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate(backPath)}
                   className="w-full border border-gray-200 text-gray-600 text-sm font-medium py-2.5 rounded-md hover:bg-gray-50 transition-colors"
                 >
-                  ← Kembali ke Katalog
+                  ← Kembali ke {backLabel}
                 </button>
               </div>
             </div>
@@ -338,7 +412,13 @@ export default function DetailBarang() {
           <div className="bg-white rounded-lg w-full max-w-md p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Ajukan Klaim</h2>
-              <button onClick={() => { setShowKlaim(false); setKlaimSuccess(false); setKlaimError('') }}
+              <button onClick={() => { 
+                setShowKlaim(false); 
+                setKlaimSuccess(false); 
+                setKlaimError('');
+                setKlaimFiles([]);
+                setKlaimPreviews([]);
+              }}
                 className="text-gray-400 hover:text-gray-600">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -358,7 +438,12 @@ export default function DetailBarang() {
                   Menunggu verifikasi admin. Kamu akan mendapat notifikasi hasilnya.
                 </p>
                 <button
-                  onClick={() => { setShowKlaim(false); setKlaimSuccess(false) }}
+                  onClick={() => { 
+                    setShowKlaim(false); 
+                    setKlaimSuccess(false);
+                    setKlaimFiles([]);
+                    setKlaimPreviews([]);
+                  }}
                   className="mt-4 bg-blue-700 text-white text-sm font-medium px-6 py-2 rounded-md hover:bg-blue-800"
                 >
                   Tutup
@@ -374,7 +459,7 @@ export default function DetailBarang() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Ciri Khusus Barang
+                    Ciri Khusus Barang <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     rows={4}
@@ -384,11 +469,38 @@ export default function DetailBarang() {
                     className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-700 resize-none"
                   />
                 </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Foto Bukti Kepemilikan <span className="text-red-500">*</span>
+                  </label>
+                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-200 rounded-md cursor-pointer hover:border-blue-700 hover:bg-blue-50 transition-colors">
+                    <svg className="w-8 h-8 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p className="text-xs text-gray-400">Klik untuk pilih foto bukti</p>
+                    <input type="file" accept="image/*" multiple onChange={handleKlaimFileChange} className="hidden" />
+                  </label>
+
+                  {klaimPreviews.length > 0 && (
+                    <div className="flex gap-2 mt-3 flex-wrap">
+                      {klaimPreviews.map((src, i) => (
+                        <img key={i} src={src} alt="" className="w-16 h-16 object-cover rounded-md border border-gray-200" />
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 {klaimError && (
                   <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-md">{klaimError}</p>
                 )}
                 <div className="flex gap-2">
-                  <button type="button" onClick={() => setShowKlaim(false)}
+                  <button type="button" onClick={() => {
+                    setShowKlaim(false);
+                    setKlaimFiles([]);
+                    setKlaimPreviews([]);
+                  }}
                     className="flex-1 border border-gray-200 text-gray-600 text-sm font-medium py-2 rounded-md hover:bg-gray-50">
                     Batal
                   </button>
@@ -409,7 +521,13 @@ export default function DetailBarang() {
           <div className="bg-white rounded-lg w-full max-w-md p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Saya Punya Barang Ini</h2>
-              <button onClick={() => { setShowReport(false); setReportSuccess(false); setReportError('') }}
+              <button onClick={() => { 
+                setShowReport(false); 
+                setReportSuccess(false); 
+                setReportError('');
+                setReportFile(null);
+                setReportPreview(null);
+              }}
                 className="text-gray-400 hover:text-gray-600">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -429,7 +547,12 @@ export default function DetailBarang() {
                   Admin akan memverifikasi apakah barang yang kamu temukan cocok. Terima kasih!
                 </p>
                 <button
-                  onClick={() => { setShowReport(false); setReportSuccess(false) }}
+                  onClick={() => { 
+                    setShowReport(false); 
+                    setReportSuccess(false);
+                    setReportFile(null);
+                    setReportPreview(null);
+                  }}
                   className="mt-4 bg-blue-700 text-white text-sm font-medium px-6 py-2 rounded-md hover:bg-blue-800"
                 >
                   Tutup
@@ -457,21 +580,56 @@ export default function DetailBarang() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Barang Sekarang Ada di Mana?
+                    Barang Sekarang Ada di Mana? <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="text"
+                  <select
                     value={reportForm.lokasi_sekarang}
                     onChange={e => setReportForm({ ...reportForm, lokasi_sekarang: e.target.value })}
-                    placeholder="Contoh: Pos Satpam Gedung FEM"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-700"
-                  />
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-md text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-700"
+                  >
+                    <option value="">Pilih lokasi penyimpanan...</option>
+                    {IPB_LOCATIONS.map((loc, i) => (
+                      <option key={i} value={loc.value} disabled={loc.disabled}>
+                        {loc.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Foto Bukti Penemuan <span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex items-center gap-4">
+                    <label className="flex-1 border-2 border-dashed border-gray-200 rounded-md p-4 flex flex-col items-center justify-center cursor-pointer hover:border-blue-700 hover:bg-blue-50 transition-colors">
+                      {reportPreview ? (
+                        <img src={reportPreview} alt="Preview" className="w-full h-32 object-cover rounded-md" />
+                      ) : (
+                        <>
+                          <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          <p className="text-xs text-gray-400 mt-1">Klik untuk pilih foto</p>
+                        </>
+                      )}
+                      <input type="file" accept="image/*" onChange={handleReportFileChange} className="hidden" />
+                    </label>
+                    {reportPreview && (
+                      <button type="button" onClick={() => { setReportFile(null); setReportPreview(null) }}
+                        className="text-xs text-red-600 font-medium hover:underline">
+                        Hapus Foto
+                      </button>
+                    )}
+                  </div>
                 </div>
                 {reportError && (
                   <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-md">{reportError}</p>
                 )}
                 <div className="flex gap-2">
-                  <button type="button" onClick={() => setShowReport(false)}
+                  <button type="button" onClick={() => { 
+                    setShowReport(false);
+                    setReportFile(null);
+                    setReportPreview(null);
+                  }}
                     className="flex-1 border border-gray-200 text-gray-600 text-sm font-medium py-2 rounded-md hover:bg-gray-50">
                     Batal
                   </button>

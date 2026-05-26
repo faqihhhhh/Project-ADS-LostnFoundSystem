@@ -4,6 +4,7 @@ from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import ARRAY
 import enum
 from app.database import Base
+from app.models.item import IPBLocation
 
 class FoundReportStatus(str, enum.Enum):
     pending  = "PENDING"
@@ -17,7 +18,7 @@ class FoundReport(Base):
     lost_item_id    = Column(Integer, ForeignKey("items.id"), nullable=False)
     reporter_id     = Column(Integer, ForeignKey("users.id"), nullable=False)
     deskripsi       = Column(Text, nullable=False)
-    lokasi_sekarang = Column(String, nullable=False)   # barang ada di mana sekarang
+    lokasi_sekarang = Column(Enum(IPBLocation), nullable=False)   # barang ada di mana sekarang
     foto_bukti      = Column(ARRAY(String), default=[])
     status          = Column(Enum(FoundReportStatus), default=FoundReportStatus.pending)
     catatan_admin   = Column(Text, nullable=True)
@@ -26,3 +27,11 @@ class FoundReport(Base):
 
     lost_item = relationship("Item", foreign_keys=[lost_item_id])
     reporter  = relationship("User", foreign_keys=[reporter_id])
+
+    @property
+    def reporter_nama(self):
+        return self.reporter.nama if self.reporter else None
+
+    @property
+    def lost_item_nama(self):
+        return self.lost_item.nama_publik if self.lost_item else None

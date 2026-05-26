@@ -56,8 +56,8 @@ export default function Navbar() {
             {/* Guest & Mahasiswa */}
             {user?.role !== 'admin' && (
               <>
-                <Link to="/beranda" className={linkClass('/beranda')}>Beranda</Link>
-                <Link to="/" className={linkClass('/')}>Database Barang</Link>
+                <Link to="/" className={linkClass('/')}>Beranda</Link>
+                <Link to="/katalog" className={linkClass('/katalog')}>Database Barang</Link>
                 <Link to="/lapor" className={linkClass('/lapor')}>Lapor Barang</Link>
                 <Link to="/leaderboard" className={linkClass('/leaderboard')}>Leaderboard</Link>
               </>
@@ -135,9 +135,9 @@ export default function Navbar() {
           <div className="md:hidden border-t border-blue-600 py-3 flex flex-col gap-3 pb-4">
             {user?.role !== 'admin' && (
               <>
-                <Link to="/beranda" className="text-blue-100 text-sm font-medium"
-                  onClick={() => setMenuOpen(false)}>Beranda</Link>
                 <Link to="/" className="text-blue-100 text-sm font-medium"
+                  onClick={() => setMenuOpen(false)}>Beranda</Link>
+                <Link to="/katalog" className="text-blue-100 text-sm font-medium"
                   onClick={() => setMenuOpen(false)}>Database Barang</Link>
                 <Link to="/lapor" className="text-blue-100 text-sm font-medium"
                   onClick={() => setMenuOpen(false)}>Lapor Barang</Link>

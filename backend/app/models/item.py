@@ -32,7 +32,7 @@ class TimePeriod(str, enum.Enum):
     all_time   = "all_time"
 
 
-class ItemLocation(str, Enum):
+class ItemLocation(str, enum.Enum):
     # Gedung Perkuliahan & Fasilitas Umum
     CCR = "Common Class Room (CCR)"
     GKB = "Gedung Kuliah Bersama (GKB)"
@@ -77,6 +77,38 @@ class ItemLocation(str, Enum):
     JALANAN_KAMPUS = "Area Jalanan Kampus"
     LAINNYA = "Lainnya"
 
+class IPBLocation(str, enum.Enum):
+    # --- POS SATPAM FAKULTAS ---
+    POS_SATPAM_FAPERTA = "Pos Satpam Faperta"
+    POS_SATPAM_SKHB = "Pos Satpam SKHB"
+    POS_SATPAM_FPIK = "Pos Satpam FPIK"
+    POS_SATPAM_FAPET = "Pos Satpam Fapet"
+    POS_SATPAM_FAHUTAN = "Pos Satpam Fahutan"
+    POS_SATPAM_FATETA = "Pos Satpam Fateta"
+    POS_SATPAM_FMIPA = "Pos Satpam FMIPA"
+    POS_SATPAM_FEM = "Pos Satpam FEM"
+    POS_SATPAM_FEMA = "Pos Satpam Fema"
+
+    # --- GEDUNG PERKULIAHAN & FASILITAS PUSAT ---
+    CCR_INFO_DESK = "Meja Informasi CCR Lantai 1"
+    PERPUS_PUSAT_CIRCULATION = "Meja Sirkulasi Perpustakaan Pusat"
+    GKB_LOBBY = "Lobi Utama Gedung Kuliah Bersama (GKB)"
+
+    # --- FASILITAS UMUM, RUMAH IBADAH, & OLAHRAGA ---
+    MASJID_AL_HURRIYYAH = "Sekretariat Masjid Al-Hurriyyah"
+    GWW_SECURITY = "Pos Keamanan Pintu Utama GWW"
+    GYMNASIUM_OFFICE = "Ruang Pengelola Gymnasium"
+    KLINIK_IPB = "Resepsionis Klinik IPB Dramaga"
+
+    # --- PUSAT ADMINISTRASI & MAHASISWA ---
+    REKTORAT_AHN = "Pos Pengamanan Lobi Rektorat AHN"
+    STUDENT_CENTER_BEM = "Sekretariat BEM KM IPB (Student Center)"
+
+    # --- ASRAMA & HUB TRANSPORTASI ---
+    ASRAMA_PKU_PUTRA = "Kantor Pengelola Asrama PKU Putra"
+    ASRAMA_PKU_PUTRI = "Kantor Pengelola Asrama PKU Putri"
+    ASRAMA_SYLVAPINUS = "Pos Penjagaan Asrama Sylvapinus"
+    SHELTER_BUS_REKTORAT = "Shelter Bus Kampus Rektorat"
 
 
 def default_expired_at():
@@ -102,7 +134,7 @@ class Item(Base):
     # Tempat barang ditemukan
     lokasi_ditemukan    = Column(String, nullable=True)
     # Tempat barang disimpan sekarang (misal: pos satpam FEM)
-    lokasi_sekarang     = Column(String, nullable=True)
+    lokasi_sekarang     = Column(Enum(IPBLocation), nullable=True)
 
     lokasi_ditemukan_list = Column(Enum(ItemLocation), nullable=True)
     lokasi_kemungkinan_list = Column(ARRAY(Enum(ItemLocation)), nullable=True)
@@ -112,7 +144,6 @@ class Item(Base):
     lokasi_kemungkinan  = Column(ARRAY(String), nullable=True)
     # Foto bukti kepemilikan (khusus LOST)
     bukti_kepemilikan   = Column(ARRAY(String), nullable=True)
-
     tanggal             = Column(DateTime(timezone=True), nullable=False)
     expired_at          = Column(DateTime(timezone=True), default=default_expired_at)
     created_at          = Column(DateTime(timezone=True), server_default=func.now())

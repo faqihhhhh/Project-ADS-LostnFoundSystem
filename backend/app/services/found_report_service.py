@@ -122,15 +122,19 @@ class FoundReportService:
             )
 
         # Notifikasi ke pemilik barang hilang beserta kode pengambilan
+        pesan_pemilik = (
+            f"Seseorang melaporkan menemukan barang '{report.lost_item.nama_publik}'. "
+            f"Barang berada di: {report.lokasi_sekarang}. "
+            f"Kode pengambilan: {kode}. "
+            f"Tunjukkan kode ini ke petugas saat mengambil barang."
+        )
+        if catatan:
+            pesan_pemilik += f"\n\nCatatan Admin: {catatan}"
+
         self.notif_service.kirim(
             user_id=report.lost_item.user_id,
             judul="Barang hilangmu ditemukan!",
-            pesan=(
-                f"Seseorang melaporkan menemukan barang '{report.lost_item.nama_publik}'. "
-                f"Barang berada di: {report.lokasi_sekarang}. "
-                f"Kode pengambilan: {kode}. "
-                f"Tunjukkan kode ini ke petugas saat mengambil barang."
-            )
+            pesan=pesan_pemilik
         )
 
         return self.report_repo.save(report)
@@ -144,4 +148,16 @@ class FoundReportService:
 
         report.status = FoundReportStatus.rejected
         report.catatan_admin = catatan
+
+        # Notifikasi ke pelapor
+        pesan_tolak = f"Laporan penemuanmu untuk '{report.lost_item.nama_publik}' ditolak oleh admin."
+        if catatan:
+            pesan_tolak += f"\n\nCatatan Admin: {catatan}"
+
+        self.notif_service.kirim(
+            user_id=report.reporter_id,
+            judul="Laporan penemuan ditolak",
+            pesan=pesan_tolak
+        )
+
         return self.report_repo.save(report)

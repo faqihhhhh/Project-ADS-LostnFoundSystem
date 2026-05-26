@@ -15,12 +15,13 @@ class ItemRepository:
         tipe: Optional[ItemType] = None,
         kategori: Optional[ItemCategory] = None,
         status: Optional[ItemStatus] = None,
+        exclude_statuses: Optional[list[ItemStatus]] = None,
         lokasi: Optional[ItemLocation] = None,
         q: Optional[str] = None,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
         skip: int = 0,
-        limit: int = 24
+        limit: Optional[int] = 24
     ) -> list[Item]:
         query = self.db.query(Item)
         if tipe:
@@ -29,14 +30,18 @@ class ItemRepository:
             query = query.filter(Item.kategori == kategori)
         if status:
             query = query.filter(Item.status == status)
+        if exclude_statuses:
+            query = query.filter(Item.status.notin_(exclude_statuses))
+            
         if lokasi:
             query = query.filter(
-                (Item.lokasi_ditemukan == lokasi) |
-                (Item.lokasi_kemungkinan.any(lokasi))
+                (Item.lokasi_ditemukan_list == lokasi) |
+                (Item.lokasi_kemungkinan_list.any(lokasi))
             )
         if q:
             query = query.filter(
-                Item.nama.ilike(f"%{q}%") | Item.lokasi.ilike(f"%{q}%")
+                Item.nama_publik.ilike(f"%{q}%") | 
+                Item.deskripsi_detail.ilike(f"%{q}%")
             )
         
         if start_date:
@@ -44,7 +49,11 @@ class ItemRepository:
         if end_date:
             query = query.filter(Item.tanggal <= end_date)
 
-        return query.order_by(Item.tanggal.desc()).offset(skip).limit(limit).all()
+        query = query.order_by(Item.tanggal.desc()).offset(skip)
+        if limit is not None:
+            query = query.limit(limit)
+            
+        return query.all()
 
     def save(self, item: Item) -> Item:
         self.db.add(item)

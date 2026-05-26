@@ -115,14 +115,18 @@ class ClaimService:
             )
 
         # Notifikasi ke pemilik barang (pengklaim)
+        pesan_pemilik = (
+            f"Klaim untuk '{claim.item.nama_publik}' disetujui. "
+            f"Barang berada di: {claim.item.lokasi_sekarang}. "
+            f"Tunjukkan kode pengambilan ini ke petugas: {kode}"
+        )
+        if catatan:
+            pesan_pemilik += f"\n\nCatatan Admin: {catatan}"
+
         self.notif_service.kirim(
             user_id=claim.user_id,
             judul="Klaim barangmu disetujui!",
-            pesan=(
-                f"Klaim untuk '{claim.item.nama_publik}' disetujui. "
-                f"Barang berada di: {claim.item.lokasi_sekarang}. "
-                f"Tunjukkan kode pengambilan ini ke petugas: {kode}"
-            )
+            pesan=pesan_pemilik
         )
 
         return self.claim_repo.save(claim)
@@ -137,4 +141,16 @@ class ClaimService:
         claim.status = ClaimStatus.rejected
         claim.catatan_admin = catatan
         claim.item.status = ItemStatus.open
+
+        # Notifikasi ke pengklaim
+        pesan_tolak = f"Klaim untuk '{claim.item.nama_publik}' ditolak oleh admin."
+        if catatan:
+            pesan_tolak += f"\n\nCatatan Admin: {catatan}"
+
+        self.notif_service.kirim(
+            user_id=claim.user_id,
+            judul="Klaim barang ditolak",
+            pesan=pesan_tolak
+        )
+
         return self.claim_repo.save(claim)

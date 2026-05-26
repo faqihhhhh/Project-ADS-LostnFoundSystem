@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional, List
 
 from sqlalchemy import Enum
-from app.models.item import ItemType, ItemStatus, ItemCategory, ItemLocation
+from app.models.item import ItemType, ItemStatus, ItemCategory, ItemLocation, IPBLocation
 
 class ItemFotoOut(BaseModel):
     id: int
@@ -20,12 +20,12 @@ class ItemCreate(BaseModel):
 
     # FOUND
     lokasi_ditemukan: Optional[str] = None
-    lokasi_sekarang: Optional[str] = None
-    lokasi_ditemukan_list = Optional[ItemLocation] = None
+    lokasi_sekarang: Optional[IPBLocation] = None
+    lokasi_ditemukan_list: Optional[ItemLocation] = None
 
     # LOST
     lokasi_kemungkinan: Optional[List[str]] = None
-    lokasi_kemungkinan_list = Optional[List[ItemLocation]] = None
+    lokasi_kemungkinan_list: Optional[List[ItemLocation]] = None
 
     tanggal: datetime
 
@@ -51,11 +51,11 @@ class ItemOut(BaseModel):
     nama_publik: str
     deskripsi_detail: Optional[str] = None
     lokasi_ditemukan: Optional[str] = None
-    lokasi_sekarang: Optional[str] = None
+    lokasi_sekarang: Optional[IPBLocation] = None
     lokasi_kemungkinan: Optional[List[str]] = None
     bukti_kepemilikan: Optional[List[str]] = None
-    lokasi_ditemukan_list = Optional[ItemLocation] = None
-    lokasi_kemungkinan_list = Optional[List[ItemLocation]] = None
+    lokasi_ditemukan_list: Optional[ItemLocation] = None
+    lokasi_kemungkinan_list: Optional[List[ItemLocation]] = None
     tanggal: datetime
     expired_at: Optional[datetime] = None
     created_at: datetime
@@ -68,6 +68,7 @@ class ItemOut(BaseModel):
 # Sengaja disembunyikan: deskripsi_detail, lokasi_sekarang, bukti_kepemilikan
 class ItemOutPublik(BaseModel):
     id: int
+    user_id: int                                # untuk cek isOwner di frontend
     tipe: ItemType
     status: ItemStatus
     kategori: ItemCategory
@@ -77,6 +78,7 @@ class ItemOutPublik(BaseModel):
     lokasi_ditemukan_list: Optional[ItemLocation] = None
     lokasi_kemungkinan_list: Optional[List[ItemLocation]] = None
     tanggal: datetime
+    expired_at: Optional[datetime] = None       # untuk info kadaluarsa
     foto: List[ItemFotoOut] = []                # foto FOUND disembunyikan untuk guest
 
     class Config:

@@ -13,11 +13,12 @@ export default function Login() {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
-    setError('')
+    // Baris setError('') dihapus agar pesan error tidak hilang saat user mulai mengetik ulang
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setError('') // Reset error hanya saat tombol Masuk ditekan
     if (!form.username || !form.password) {
       setError('Username dan password wajib diisi')
       return
@@ -129,7 +130,7 @@ export default function Login() {
       </div>
 
       {/* Back to katalog */}
-      <a href="/" className="mt-4 text-sm text-blue-700 hover:underline">
+      <a href="/katalog" className="mt-4 text-sm text-blue-700 hover:underline">
         ← Lihat katalog tanpa login
       </a>
     </div>

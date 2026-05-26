@@ -6,6 +6,8 @@ from datetime import datetime
 from app.database import get_db
 from app.repositories.item_match_repo import ItemMatchRepository
 from app.repositories.item_repo import ItemRepository
+from app.repositories.user_repo import UserRepository
+from app.repositories.point_log_repo import PointLogRepository
 from app.repositories.notification_repo import NotificationRepository
 from app.services.match_service import MatchService
 from app.services.notification_service import NotificationService
@@ -19,6 +21,8 @@ def get_service(db: Session = Depends(get_db)) -> MatchService:
     return MatchService(
         ItemMatchRepository(db),
         ItemRepository(db),
+        UserRepository(db),
+        PointLogRepository(db),
         NotificationService(NotificationRepository(db))
     )
 

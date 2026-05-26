@@ -195,15 +195,18 @@ export default function Dashboard() {
             </span>
           </div>
           <p className="text-sm font-semibold text-gray-900">
-            Untuk Barang Hilang #{item.lost_item_id}
+            Oleh: {item.reporter_nama || `User #${item.reporter_id}`}
           </p>
-          <p className="text-xs text-gray-400 mt-0.5">{formatTanggal(item.created_at)}</p>
+          <p className="text-xs text-blue-700 font-medium mt-0.5">
+            Merespon Barang: {item.lost_item_nama || `#${item.lost_item_id}`}
+          </p>
+          <p className="text-xs text-gray-400 mt-1">{formatTanggal(item.created_at)}</p>
         </div>
         <button
           onClick={() => navigate(`/barang/${item.lost_item_id}`)}
           className="text-xs text-blue-700 border border-blue-200 px-3 py-1.5 rounded-md hover:bg-blue-50 shrink-0"
         >
-          Lihat Barang
+          Lihat Barang Hilang
         </button>
       </div>
 

@@ -4,8 +4,62 @@ import Navbar from '../../components/shared/Navbar'
 import Badge from '../../components/shared/Badge'
 import api from '../../services/api'
 
-const KATEGORI = ['semua', 'elektronik', 'dompet', 'kunci', 'kartu', 'pakaian', 'tas', 'botol', 'lainnya']
-const STATUS   = ['semua', 'OPEN', 'PENDING', 'CLOSED', 'EXPIRED']
+const KATEGORI = [
+  'semua', 'elektronik', 'dompet', 'kunci', 'kartu', 'pakaian', 'tas', 'botol', 'lainnya'
+]
+
+const LOKASI = [
+  { label: 'Semua Lokasi', value: 'semua' },
+  { label: 'Common Class Room (CCR)', value: 'Common Class Room (CCR)' },
+  { label: 'Gedung Kuliah Bersama (GKB)', value: 'Gedung Kuliah Bersama (GKB)' },
+  { label: 'Perpustakaan Pusat', value: 'Perpustakaan Pusat' },
+  { label: 'Masjid Al-Hurriyyah', value: 'Masjid Al-Hurriyyah' },
+  { label: 'Gymnasium', value: 'Gymnasium' },
+  { label: 'Auditorium Andi Hakim Nasoetion', value: 'Auditorium Andi Hakim Nasoetion' },
+  { label: 'Asrama Putra (Astra)', value: 'Asrama Putra (Astra)' },
+  { label: 'Asrama Putri (Astri)', value: 'Asrama Putri (Astri)' },
+  { label: 'Kantin Stevia', value: 'Kantin Stevia' },
+  { label: 'Kantin Ungu', value: 'Kantin Ungu' },
+  { label: 'Blue Corner', value: 'Blue Corner' },
+  { label: 'Yellow Corner', value: 'Yellow Corner' },
+  { label: 'Kantin Nays', value: 'Kantin Nays' },
+  { label: 'Kantin Rimbawan', value: 'Kantin Rimbawan' },
+  { label: 'Kantin Sapta', value: 'Kantin Sapta' },
+  { label: 'Kantin Plasma', value: 'Kantin Plasma' },
+  { label: 'Kantin Empat (Kanpat)', value: 'Kantin Empat (Kanpat)' },
+  { label: 'Kantin Ibu Sayang', value: 'Kantin Ibu Sayang' },
+  { label: 'Kantin Makjan', value: 'Kantin Makjan' },
+  { label: 'Fakultas Pertanian (Faperta)', value: 'Fakultas Pertanian (Faperta)' },
+  { label: 'Fakultas Kedokteran Hewan (FKH)', value: 'Fakultas Kedokteran Hewan (FKH)' },
+  { label: 'Fakultas Perikanan dan Ilmu Kelautan (FPIK)', value: 'Fakultas Perikanan dan Ilmu Kelautan (FPIK)' },
+  { label: 'Fakultas Peternakan (Fapet)', value: 'Fakultas Peternakan (Fapet)' },
+  { label: 'Fakultas Kehutanan dan Lingkungan (Fahutan)', value: 'Fakultas Kehutanan dan Lingkungan (Fahutan)' },
+  { label: 'Fakultas Teknologi Pertanian (Fateta)', value: 'Fakultas Teknologi Pertanian (Fateta)' },
+  { label: 'Fakultas Matematika dan Ilmu Pengetahuan Alam (FMIPA)', value: 'Fakultas Matematika dan Ilmu Pengetahuan Alam (FMIPA)' },
+  { label: 'Fakultas Ekonomi dan Manajemen (FEM)', value: 'Fakultas Ekonomi dan Manajemen (FEM)' },
+  { label: 'Fakultas Ekologi Manusia (FEMA)', value: 'Fakultas Ekologi Manusia (FEMA)' },
+  { label: 'Sekolah Kedokteran Hewan and Biomedis (SKHB)', value: 'Sekolah Kedokteran Hewan and Biomedis (SKHB)' },
+  { label: 'Sekolah Bisnis (SB)', value: 'Sekolah Bisnis (SB)' },
+  { label: 'Sekolah Vokasi (SV)', value: 'Sekolah Vokasi (SV)' },
+  { label: 'Halte Bus / Lintas', value: 'Halte Bus / Lintas' },
+  { label: 'Area Jalanan Kampus', value: 'Area Jalanan Kampus' },
+  { label: 'Lainnya', value: 'Lainnya' },
+]
+
+const PERIODE = [
+  { label: 'Semua Waktu', value: 'all_time' },
+  { label: 'Hari Ini', value: 'today' },
+  { label: 'Minggu Ini', value: 'this_week' },
+  { label: 'Bulan Ini', value: 'this_month' },
+]
+
+const STATUS_OPTS = [
+  { label: 'Semua Status', value: 'semua' },
+  { label: 'OPEN', value: 'OPEN' },
+  { label: 'PENDING', value: 'PENDING' },
+  { label: 'CLOSED', value: 'CLOSED' },
+  { label: 'EXPIRED', value: 'EXPIRED' },
+]
 
 export default function KelolaBarang() {
   const navigate = useNavigate()
@@ -15,6 +69,8 @@ export default function KelolaBarang() {
   const [tipe, setTipe]               = useState('semua')
   const [kategori, setKategori]       = useState('semua')
   const [status, setStatus]           = useState('semua')
+  const [lokasi, setLokasi]           = useState('semua')
+  const [period, setPeriod]           = useState('all_time')
   const [search, setSearch]           = useState('')
   const [searchInput, setSearchInput] = useState('')
 
@@ -28,12 +84,20 @@ export default function KelolaBarang() {
   const [showDetail, setShowDetail] = useState(false)
   const [detailItem, setDetailItem] = useState(null)
 
-  useEffect(() => { fetchItems() }, [tipe, kategori, status, search])
+  useEffect(() => { fetchItems() }, [tipe, kategori, status, lokasi, period, search])
 
   const fetchItems = async () => {
     setLoading(true)
     try {
-      const res = await api.get('/items/admin/all')
+      const params = {}
+      if (tipe !== 'semua')     params.tipe     = tipe
+      if (kategori !== 'semua') params.kategori  = kategori
+      if (lokasi !== 'semua')   params.lokasi    = lokasi
+      if (period !== 'all_time') params.period   = period
+      if (status !== 'semua')   params.status    = status
+      if (search)               params.q         = search
+
+      const res = await api.get('/items/admin/all', { params })
       setItems(res.data)
     } catch {
       setItems([])
@@ -78,26 +142,12 @@ export default function KelolaBarang() {
     day: 'numeric', month: 'short', year: 'numeric'
   })
 
-  // Filter lokal
-  const filtered = items.filter(item => {
-    if (tipe !== 'semua'     && item.tipe     !== tipe)     return false
-    if (kategori !== 'semua' && item.kategori !== kategori) return false
-    if (status !== 'semua'   && item.status   !== status)   return false
-    if (search && !item.nama_publik.toLowerCase().includes(search.toLowerCase()) &&
-        !item.lokasi_ditemukan?.toLowerCase().includes(search.toLowerCase()) &&
-        !(item.lokasi_kemungkinan || []).join(' ').toLowerCase().includes(search.toLowerCase())) {
-      return false
-    }
-    return true
-  })
-
-  // Stats
+  // Stats (Based on current items in memory)
   const stats = {
     total:   items.length,
     open:    items.filter(i => i.status === 'OPEN').length,
     pending: items.filter(i => i.status === 'PENDING').length,
     closed:  items.filter(i => i.status === 'CLOSED').length,
-    expired: items.filter(i => i.status === 'EXPIRED').length,
     lost:    items.filter(i => i.tipe === 'LOST').length,
     found:   items.filter(i => i.tipe === 'FOUND').length,
   }
@@ -125,7 +175,7 @@ export default function KelolaBarang() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
           {[
             { label: 'Total Barang', value: stats.total,   color: 'text-gray-900',   bg: 'bg-white' },
             { label: 'Masih OPEN',   value: stats.open,    color: 'text-blue-700',   bg: 'bg-blue-50' },
@@ -139,230 +189,186 @@ export default function KelolaBarang() {
           ))}
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-6">
+        {/* Search Bar (Like Katalog) */}
+        <form onSubmit={handleSearch} className="flex gap-2 mb-4">
+          <input
+            type="text"
+            value={searchInput}
+            onChange={e => setSearchInput(e.target.value)}
+            placeholder="Cari nama barang..."
+            className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-md text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-700"
+          />
+          <button
+            type="submit"
+            className="bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-800 transition-colors"
+          >
+            Cari
+          </button>
+          {(search || kategori !== 'semua' || lokasi !== 'semua' || period !== 'all_time' || status !== 'semua' || tipe !== 'semua') && (
+            <button
+              type="button"
+              onClick={() => { 
+                setSearch(''); 
+                setSearchInput('');
+                setKategori('semua');
+                setLokasi('semua');
+                setPeriod('all_time');
+                setStatus('semua');
+                setTipe('semua');
+              }}
+              className="px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-500 hover:bg-gray-100"
+            >
+              Reset
+            </button>
+          )}
+        </form>
 
-          {/* ── Filter Sidebar ── */}
-          <div className="w-full lg:w-56 shrink-0 space-y-4">
+        {/* Tipe Toggle (Like Katalog) */}
+        <div className="flex gap-2 mb-6">
+          {[
+            { label: 'Semua', value: 'semua' },
+            { label: 'Barang Hilang', value: 'LOST' },
+            { label: 'Barang Temuan', value: 'FOUND' },
+          ].map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => setTipe(opt.value)}
+              className={`text-sm font-medium px-4 py-1.5 rounded-md transition-colors ${
+                tipe === opt.value
+                  ? 'bg-blue-700 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {opt.label}
+              {opt.value === 'LOST'  && ` (${stats.lost})`}
+              {opt.value === 'FOUND' && ` (${stats.found})`}
+            </button>
+          ))}
+        </div>
 
-            {/* Search */}
-            <div className="bg-white border border-gray-200 rounded-lg p-4">
-              <h2 className="text-sm font-semibold text-gray-900 mb-3">Pencarian</h2>
-              <form onSubmit={handleSearch} className="space-y-2">
-                <input
-                  type="text"
-                  value={searchInput}
-                  onChange={e => setSearchInput(e.target.value)}
-                  placeholder="Nama atau lokasi..."
-                  className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-700"
-                />
-                <button type="submit"
-                  className="w-full bg-blue-700 text-white text-sm font-medium py-2 rounded-md hover:bg-blue-800">
-                  Cari
-                </button>
-                {search && (
-                  <button type="button"
-                    onClick={() => { setSearch(''); setSearchInput('') }}
-                    className="w-full border border-gray-200 text-gray-500 text-sm py-1.5 rounded-md hover:bg-gray-50">
-                    Reset
-                  </button>
-                )}
-              </form>
-            </div>
-
-            {/* Filter Tipe */}
-            <div className="bg-white border border-gray-200 rounded-lg p-4">
-              <h2 className="text-sm font-semibold text-gray-900 mb-3">Tipe</h2>
-              <div className="space-y-1">
-                {[
-                  { label: 'Semua',                   value: 'semua' },
-                  { label: `LOST (${stats.lost})`,    value: 'LOST' },
-                  { label: `FOUND (${stats.found})`,  value: 'FOUND' },
-                ].map(opt => (
-                  <button key={opt.value} onClick={() => setTipe(opt.value)}
-                    className={`w-full text-left text-sm px-3 py-2 rounded-md transition-colors ${
-                      tipe === opt.value
-                        ? 'bg-blue-700 text-white font-medium'
-                        : 'text-gray-600 hover:bg-gray-100'
-                    }`}>
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Filter Status */}
-            <div className="bg-white border border-gray-200 rounded-lg p-4">
-              <h2 className="text-sm font-semibold text-gray-900 mb-3">Status</h2>
-              <div className="space-y-1">
-                {STATUS.map(s => (
-                  <button key={s} onClick={() => setStatus(s)}
-                    className={`w-full text-left text-sm px-3 py-2 rounded-md transition-colors capitalize ${
-                      status === s
-                        ? 'bg-blue-700 text-white font-medium'
-                        : 'text-gray-600 hover:bg-gray-100'
-                    }`}>
-                    {s === 'semua' ? 'Semua Status' : s}
-                    {s !== 'semua' && (
-                      <span className="ml-1 text-xs opacity-70">
-                        ({items.filter(i => i.status === s).length})
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Filter Kategori */}
-            <div className="bg-white border border-gray-200 rounded-lg p-4">
-              <h2 className="text-sm font-semibold text-gray-900 mb-3">Kategori</h2>
-              <div className="space-y-1">
-                {KATEGORI.map(k => (
-                  <button key={k} onClick={() => setKategori(k)}
-                    className={`w-full text-left text-sm px-3 py-2 rounded-md capitalize transition-colors ${
-                      kategori === k
-                        ? 'bg-blue-700 text-white font-medium'
-                        : 'text-gray-600 hover:bg-gray-100'
-                    }`}>
-                    {k === 'semua' ? 'Semua Kategori' : k}
-                  </button>
-                ))}
+        {/* Dropdown Filters (Like Katalog + Status) */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Status</label>
+            <div className="relative">
+              <select
+                value={status}
+                onChange={e => setStatus(e.target.value)}
+                className="w-full appearance-none bg-white border border-gray-200 rounded-md px-3 py-2 pr-9 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-700"
+              >
+                {STATUS_OPTS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" /></svg>
               </div>
             </div>
           </div>
-
-          {/* ── Tabel Barang ── */}
-          <div className="flex-1 min-w-0">
-            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-
-              {/* Table Header */}
-              <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-                <p className="text-sm font-medium text-gray-700">
-                  {filtered.length} barang ditemukan
-                  {search && <span className="text-gray-400"> untuk "{search}"</span>}
-                </p>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Kategori</label>
+            <div className="relative">
+              <select
+                value={kategori}
+                onChange={e => setKategori(e.target.value)}
+                className="w-full appearance-none bg-white border border-gray-200 rounded-md px-3 py-2 pr-9 text-sm capitalize cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-700"
+              >
+                {KATEGORI.map(k => <option key={k} value={k}>{k === 'semua' ? 'Semua Kategori' : k}</option>)}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" /></svg>
               </div>
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Lokasi</label>
+            <div className="relative">
+              <select
+                value={lokasi}
+                onChange={e => setLokasi(e.target.value)}
+                className="w-full appearance-none bg-white border border-gray-200 rounded-md px-3 py-2 pr-9 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-700"
+              >
+                {LOKASI.map(l => <option key={l.value} value={l.value}>{l.label}</option>)}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Waktu</label>
+            <div className="relative">
+              <select
+                value={period}
+                onChange={e => setPeriod(e.target.value)}
+                className="w-full appearance-none bg-white border border-gray-200 rounded-md px-3 py-2 pr-9 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-700"
+              >
+                {PERIODE.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </div>
+            </div>
+          </div>
+        </div>
 
-              {loading ? (
-                <div className="divide-y divide-gray-100">
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className="flex items-center gap-4 px-5 py-4 animate-pulse">
-                      <div className="w-12 h-12 bg-gray-100 rounded-md shrink-0" />
-                      <div className="flex-1 space-y-2">
-                        <div className="h-3 bg-gray-100 rounded w-1/3" />
-                        <div className="h-3 bg-gray-100 rounded w-1/2" />
-                      </div>
-                      <div className="h-6 w-16 bg-gray-100 rounded-full" />
-                    </div>
-                  ))}
-                </div>
-              ) : filtered.length === 0 ? (
-                <div className="py-16 text-center">
-                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
+        {/* Tabel Barang */}
+        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+          <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
+            <p className="text-sm font-medium text-gray-700">
+              {items.length} barang ditemukan
+            </p>
+          </div>
+
+          {loading ? (
+            <div className="divide-y divide-gray-100">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex items-center gap-4 px-5 py-4 animate-pulse">
+                  <div className="w-12 h-12 bg-gray-100 rounded-md" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3 bg-gray-100 rounded w-1/3" />
+                    <div className="h-3 bg-gray-100 rounded w-1/2" />
                   </div>
-                  <p className="text-gray-500 text-sm">Tidak ada barang ditemukan</p>
                 </div>
-              ) : (
-                <div className="divide-y divide-gray-100">
-                  {filtered.map(item => {
-                    const foto   = item.foto?.[0]?.url
-                    const lokasi = item.tipe === 'FOUND'
-                      ? item.lokasi_ditemukan
-                      : item.lokasi_kemungkinan?.[0]
-
-                    return (
-                      <div key={item.id}
-                        className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50 transition-colors">
-
-                        {/* Foto */}
-                        <div className="w-12 h-12 bg-gray-100 rounded-md overflow-hidden shrink-0">
-                          {foto ? (
-                            <img src={`${import.meta.env.VITE_API_URL}${foto}`}
-                              alt="" className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                              </svg>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <p className="text-sm font-semibold text-gray-900 truncate">
-                              {item.nama_publik}
-                            </p>
-                            <Badge text={item.tipe} />
-                          </div>
-                          <div className="flex items-center gap-3 text-xs text-gray-400">
-                            <span className="capitalize">{item.kategori}</span>
-                            {lokasi && (
-                              <>
-                                <span>·</span>
-                                <span className="truncate">{lokasi}</span>
-                              </>
-                            )}
-                            <span>·</span>
-                            <span>{formatTanggal(item.created_at)}</span>
-                          </div>
-                          {item.expired_at && item.status === 'OPEN' && (
-                            <p className="text-xs text-yellow-500 mt-0.5">
-                              Expired: {formatTanggal(item.expired_at)}
-                            </p>
-                          )}
-                        </div>
-
-                        {/* Status */}
-                        <Badge text={item.status} />
-
-                        {/* Actions */}
-                        <div className="flex items-center gap-1 shrink-0">
-                          <button
-                            onClick={() => openDetail(item)}
-                            className="p-1.5 text-gray-400 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors"
-                            title="Lihat detail"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => navigate(`/barang/${item.id}`)}
-                            className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
-                            title="Buka halaman publik"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => openHapus(item)}
-                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                            title="Hapus barang"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
+              ))}
             </div>
-          </div>
+          ) : items.length === 0 ? (
+            <div className="py-20 text-center text-gray-400">
+              <p>Tidak ada barang ditemukan</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-100">
+              {items.map(item => {
+                const foto = item.foto?.[0]?.url
+                return (
+                  <div key={item.id} className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50 transition-colors">
+                    <div className="w-12 h-12 bg-gray-100 rounded-md overflow-hidden shrink-0">
+                      {foto && <img src={`${import.meta.env.VITE_API_URL}${foto}`} className="w-full h-full object-cover" alt="" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <p className="text-sm font-semibold text-gray-900 truncate">{item.nama_publik}</p>
+                        <Badge text={item.tipe} />
+                      </div>
+                      <p className="text-xs text-gray-400 capitalize">
+                        {item.kategori} · {formatTanggal(item.created_at)}
+                      </p>
+                    </div>
+                    <Badge text={item.status} />
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => openDetail(item)} className="p-1.5 text-gray-400 hover:text-blue-700 rounded-md">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" strokeWidth={2} /><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" strokeWidth={2} /></svg>
+                      </button>
+                      <button onClick={() => navigate(`/barang/${item.id}`)} className="p-1.5 text-gray-400 hover:text-green-600 rounded-md">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" strokeWidth={2} /></svg>
+                      </button>
+                      <button onClick={() => openHapus(item)} className="p-1.5 text-gray-400 hover:text-red-600 rounded-md">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" strokeWidth={2} /></svg>
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
       </div>
 
