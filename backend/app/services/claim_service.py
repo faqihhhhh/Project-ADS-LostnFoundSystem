@@ -60,6 +60,7 @@ class ClaimService:
         return self.claim_repo.save(claim)
 
     def upload_bukti(self, claim_id: int, file: UploadFile, current_user: User) -> Claim:
+        from app.core.storage import upload_file_to_supabase
         claim = self.claim_repo.get_by_id(claim_id)
         if not claim:
             raise HTTPException(status_code=404, detail="Klaim tidak ditemukan")
@@ -76,12 +77,9 @@ class ClaimService:
         if len(contents) > 5 * 1024 * 1024:
             raise HTTPException(status_code=400, detail="Ukuran foto maksimal 5MB")
 
-        ext = file.filename.split(".")[-1]
-        filename = f"bukti_{uuid.uuid4()}.{ext}"
-        with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
-            f.write(contents)
+        public_url = upload_file_to_supabase(contents, file.filename, file.content_type)
 
-        claim.bukti_foto = (claim.bukti_foto or []) + [f"/uploads/{filename}"]
+        claim.bukti_foto = (claim.bukti_foto or []) + [public_url]
         return self.claim_repo.save(claim)
 
     def approve(self, claim_id: int, catatan: str) -> Claim:

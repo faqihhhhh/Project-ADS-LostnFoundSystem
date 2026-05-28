@@ -16,7 +16,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://ipb-lost-found.vercel.app", # Ganti dengan URL Vercel Anda nanti
+        "https://project-ads-lostn-found-system.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],

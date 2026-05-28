@@ -113,6 +113,7 @@ class ItemService:
         )
 
     def upload_foto(self, item_id: int, file: UploadFile, current_user: User) -> Item:
+        from app.core.storage import upload_file_to_supabase
         item = self.item_repo.get_by_id(item_id)
         if not item:
             raise HTTPException(status_code=404, detail="Barang tidak ditemukan")
@@ -127,17 +128,15 @@ class ItemService:
         if len(contents) > 5 * 1024 * 1024:
             raise HTTPException(status_code=400, detail="Ukuran foto maksimal 5MB")
 
-        ext = file.filename.split(".")[-1]
-        filename = f"{uuid.uuid4()}.{ext}"
-        with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
-            f.write(contents)
+        public_url = upload_file_to_supabase(contents, file.filename, file.content_type)
 
-        foto = ItemFoto(item_id=item_id, url=f"/uploads/{filename}")
+        foto = ItemFoto(item_id=item_id, url=public_url)
         self.item_repo.add_foto(foto)
         return self.item_repo.get_by_id(item_id)
 
     def upload_bukti_kepemilikan(self, item_id: int, file: UploadFile, current_user: User) -> Item:
         """Khusus barang LOST — upload bukti kepemilikan"""
+        from app.core.storage import upload_file_to_supabase
         item = self.item_repo.get_by_id(item_id)
         if not item:
             raise HTTPException(status_code=404, detail="Barang tidak ditemukan")
@@ -154,13 +153,10 @@ class ItemService:
         if len(contents) > 5 * 1024 * 1024:
             raise HTTPException(status_code=400, detail="Ukuran file maksimal 5MB")
 
-        ext = file.filename.split(".")[-1]
-        filename = f"bukti_{uuid.uuid4()}.{ext}"
-        with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
-            f.write(contents)
+        public_url = upload_file_to_supabase(contents, file.filename, file.content_type)
 
         current_bukti = item.bukti_kepemilikan or []
-        item.bukti_kepemilikan = current_bukti + [f"/uploads/{filename}"]
+        item.bukti_kepemilikan = current_bukti + [public_url]
         return self.item_repo.save(item)
 
     def hapus(self, item_id: int, current_user: User) -> None:

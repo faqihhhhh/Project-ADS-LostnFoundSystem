@@ -62,6 +62,7 @@ class FoundReportService:
         return self.report_repo.save(report)
 
     def upload_foto(self, report_id: int, file: UploadFile, current_user: User) -> FoundReport:
+        from app.core.storage import upload_file_to_supabase
         report = self.report_repo.get_by_id(report_id)
         if not report:
             raise HTTPException(status_code=404, detail="Laporan tidak ditemukan")
@@ -78,12 +79,9 @@ class FoundReportService:
         if len(contents) > 5 * 1024 * 1024:
             raise HTTPException(status_code=400, detail="Ukuran foto maksimal 5MB")
 
-        ext = file.filename.split(".")[-1]
-        filename = f"found_report_{uuid.uuid4()}.{ext}"
-        with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
-            f.write(contents)
+        public_url = upload_file_to_supabase(contents, file.filename, file.content_type)
 
-        report.foto_bukti = (report.foto_bukti or []) + [f"/uploads/{filename}"]
+        report.foto_bukti = (report.foto_bukti or []) + [public_url]
         return self.report_repo.save(report)
 
     def approve(self, report_id: int, catatan: str) -> FoundReport:
