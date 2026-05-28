@@ -14,7 +14,10 @@ app = FastAPI(title="IPB Lost & Found API", version="1.0.0")
 app.include_router(found_report.router)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "https://ipb-lost-found.vercel.app", # Ganti dengan URL Vercel Anda nanti
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
