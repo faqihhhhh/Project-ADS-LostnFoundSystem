@@ -24,7 +24,7 @@ export default function ItemCard({ item }) {
       <div className="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden">
         {foto ? (
           <img
-            src={`${import.meta.env.VITE_API_URL}${foto}`}
+            src={foto.startsWith('http') ? foto : `${import.meta.env.VITE_API_URL}${foto}`}
             alt={item.nama_publik}
             className="w-full h-full object-cover"
           />

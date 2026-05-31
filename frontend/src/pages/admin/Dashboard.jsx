@@ -140,8 +140,8 @@ export default function Dashboard() {
           <p className="text-xs text-gray-400 mb-2">Foto bukti kepemilikan:</p>
           <div className="flex gap-2 flex-wrap">
             {item.bukti_foto.map((url, i) => (
-              <a key={i} href={`${import.meta.env.VITE_API_URL}${url}`} target="_blank" rel="noreferrer">
-                <img src={`${import.meta.env.VITE_API_URL}${url}`} alt=""
+              <a key={i} href={url.startsWith('http') ? url : `${import.meta.env.VITE_API_URL}${url}`} target="_blank" rel="noreferrer">
+                <img src={url.startsWith('http') ? url : `${import.meta.env.VITE_API_URL}${url}`} alt=""
                   className="w-20 h-20 object-cover rounded-md border border-gray-200 hover:opacity-80" />
               </a>
             ))}
@@ -229,8 +229,8 @@ export default function Dashboard() {
           <p className="text-xs text-gray-400 mb-2">Foto bukti penemuan:</p>
           <div className="flex gap-2 flex-wrap">
             {item.foto_bukti.map((url, i) => (
-              <a key={i} href={`${import.meta.env.VITE_API_URL}${url}`} target="_blank" rel="noreferrer">
-                <img src={`${import.meta.env.VITE_API_URL}${url}`} alt=""
+              <a key={i} href={url.startsWith('http') ? url : `${import.meta.env.VITE_API_URL}${url}`} target="_blank" rel="noreferrer">
+                <img src={url.startsWith('http') ? url : `${import.meta.env.VITE_API_URL}${url}`} alt=""
                   className="w-20 h-20 object-cover rounded-md border border-gray-200 hover:opacity-80" />
               </a>
             ))}

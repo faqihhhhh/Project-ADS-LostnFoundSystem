@@ -210,7 +210,7 @@ export default function DetailBarang() {
             <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200 mb-2">
               {item.foto?.length > 0 ? (
                 <img
-                  src={`${import.meta.env.VITE_API_URL}${item.foto[fotoIndex].url}`}
+                  src={item.foto[fotoIndex].url.startsWith('http') ? item.foto[fotoIndex].url : `${import.meta.env.VITE_API_URL}${item.foto[fotoIndex].url}`}
                   alt={item.nama_publik}
                   className="w-full h-full object-cover"
                 />
@@ -237,7 +237,7 @@ export default function DetailBarang() {
                     }`}
                   >
                     <img
-                      src={`${import.meta.env.VITE_API_URL}${f.url}`}
+                      src={f.url.startsWith('http') ? f.url : `${import.meta.env.VITE_API_URL}${f.url}`}
                       alt=""
                       className="w-full h-full object-cover"
                     />

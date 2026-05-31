@@ -170,7 +170,7 @@ export default function KlaimSaya() {
               {(type === 'claim' ? item.bukti_foto : item.foto_bukti).map((url, i) => (
                 <img
                   key={i}
-                  src={`${import.meta.env.VITE_API_URL}${url}`}
+                  src={url.startsWith('http') ? url : `${import.meta.env.VITE_API_URL}${url}`}
                   alt=""
                   className="w-16 h-16 object-cover rounded-md border border-gray-200"
                 />

@@ -341,7 +341,13 @@ export default function KelolaBarang() {
                 return (
                   <div key={item.id} className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50 transition-colors">
                     <div className="w-12 h-12 bg-gray-100 rounded-md overflow-hidden shrink-0">
-                      {foto && <img src={`${import.meta.env.VITE_API_URL}${foto}`} className="w-full h-full object-cover" alt="" />}
+                      {foto && (
+                        <img
+                          src={foto.startsWith('http') ? foto : `${import.meta.env.VITE_API_URL}${foto}`}
+                          className="w-full h-full object-cover"
+                          alt=""
+                        />
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
@@ -389,8 +395,8 @@ export default function KelolaBarang() {
             {detailItem.foto?.length > 0 && (
               <div className="flex gap-2 mb-4 flex-wrap">
                 {detailItem.foto.map((f, i) => (
-                  <a key={i} href={`${import.meta.env.VITE_API_URL}${f.url}`} target="_blank" rel="noreferrer">
-                    <img src={`${import.meta.env.VITE_API_URL}${f.url}`} alt=""
+                  <a key={i} href={f.url.startsWith('http') ? f.url : `${import.meta.env.VITE_API_URL}${f.url}`} target="_blank" rel="noreferrer">
+                    <img src={f.url.startsWith('http') ? f.url : `${import.meta.env.VITE_API_URL}${f.url}`} alt=""
                       className="w-24 h-24 object-cover rounded-md border border-gray-200 hover:opacity-80" />
                   </a>
                 ))}
@@ -427,8 +433,8 @@ export default function KelolaBarang() {
                 <p className="text-xs text-gray-400 mb-2">Bukti Kepemilikan:</p>
                 <div className="flex gap-2 flex-wrap">
                   {detailItem.bukti_kepemilikan.map((url, i) => (
-                    <a key={i} href={`${import.meta.env.VITE_API_URL}${url}`} target="_blank" rel="noreferrer">
-                      <img src={`${import.meta.env.VITE_API_URL}${url}`} alt=""
+                    <a key={i} href={url.startsWith('http') ? url : `${import.meta.env.VITE_API_URL}${url}`} target="_blank" rel="noreferrer">
+                      <img src={url.startsWith('http') ? url : `${import.meta.env.VITE_API_URL}${url}`} alt=""
                         className="w-20 h-20 object-cover rounded-md border border-gray-200 hover:opacity-80" />
                     </a>
                   ))}
