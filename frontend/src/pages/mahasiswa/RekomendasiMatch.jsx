@@ -55,8 +55,8 @@ export default function RekomendasiMatch() {
           <div className="space-y-4">
             {matches.map(m => (
               <div key={m.id} className="bg-white border border-gray-200 rounded-lg p-5 flex gap-4">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center shrink-0">
-                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
+                  <svg className="w-6 h-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>

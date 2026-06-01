@@ -361,7 +361,7 @@ export default function Dashboard() {
           {[
             { label: 'Total Pending', value: totalPending,   color: 'text-gray-900',   bg: 'bg-white' },
             { label: 'Klaim Pending', value: pendingClaims,  color: 'text-yellow-600', bg: 'bg-yellow-50' },
-            { label: 'Match Pending', value: pendingMatches, color: 'text-purple-600', bg: 'bg-purple-50' },
+            { label: 'Match Pending', value: pendingMatches, color: 'text-blue-700',   bg: 'bg-blue-50' },
           ].map(s => (
             <div key={s.label} className={`${s.bg} border border-gray-200 rounded-lg p-4 text-center`}>
               <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>

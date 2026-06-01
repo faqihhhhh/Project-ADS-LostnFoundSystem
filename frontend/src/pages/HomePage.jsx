@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Navbar from '../components/shared/Navbar'
 import Footer from '../components/shared/Footer'
+import heroBg from '../assets/IPBbackground.jpg'
 
 export default function HomePage() {
   const navigate = useNavigate()
@@ -28,7 +29,7 @@ export default function HomePage() {
     },
     {
       icon: (
-        <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-6 h-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
             d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
@@ -67,7 +68,7 @@ export default function HomePage() {
           className="relative min-h-[600px] flex items-center overflow-hidden"
           style={{
             // Ganti URL di bawah untuk mengubah gambar background hero
-            backgroundImage: `url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2000')`,
+            backgroundImage: `url(${heroBg})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat'
