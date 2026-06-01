@@ -64,15 +64,17 @@ export default function HomePage() {
       <main className="flex-1">
         {/* ── HERO ── */}
         <section
-          className="relative min-h-[580px] flex items-center overflow-hidden"
+          className="relative min-h-[600px] flex items-center overflow-hidden"
           style={{
-            backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/IPB_University_%28aerial_view%29.jpg/1280px-IPB_University_%28aerial_view%29.jpg')`,
+            // Ganti URL di bawah untuk mengubah gambar background hero
+            backgroundImage: `url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2000')`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center 40%',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
           }}
         >
-          {/* Overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/50 to-transparent" />
+          {/* Overlay gradient untuk memastikan teks tetap terbaca jelas di atas gambar apapun */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
 
           <div className="relative z-10 max-w-5xl mx-auto px-6 sm:px-10 py-20">
             <p className="text-blue-300 text-sm font-semibold tracking-widest uppercase mb-3">
