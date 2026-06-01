@@ -287,7 +287,7 @@ export default function Dashboard() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Badge text={item.status} />
-            <span className="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full">
+            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
               Auto Match
             </span>
           </div>
@@ -299,9 +299,9 @@ export default function Dashboard() {
       </div>
 
       {/* Alasan match dari sistem */}
-      <div className="bg-purple-50 border border-purple-100 rounded-md px-4 py-3 mb-3">
-        <p className="text-xs text-purple-500 font-medium mb-1">Alasan sistem mendeteksi kecocokan:</p>
-        <p className="text-sm text-purple-800">{item.alasan_match}</p>
+      <div className="bg-blue-50 border border-blue-100 rounded-md px-4 py-3 mb-3">
+        <p className="text-xs text-blue-700 font-medium mb-1">Alasan sistem mendeteksi kecocokan:</p>
+        <p className="text-sm text-gray-700">{item.alasan_match}</p>
       </div>
 
       {/* Link lihat kedua barang */}
