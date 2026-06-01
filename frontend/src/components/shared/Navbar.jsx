@@ -44,7 +44,7 @@ export default function Navbar() {
           <div className="flex items-center gap-10">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 shrink-0">
-              <span className="text-blue-700 font-bold text-lg tracking-tight">
+              <span className="text-blue-700 font-extrabold text-xl tracking-tight">
                 LostnFound
               </span>
             </Link>
@@ -64,22 +64,7 @@ export default function Navbar() {
 
               {/* Mahasiswa only */}
               {user?.role === 'mahasiswa' && (
-                <>
-                  <Link to="/klaim-saya" className={linkClass('/klaim-saya')}>Klaim Saya</Link>
-
-                  {/* Notifikasi Bell */}
-                  <Link to="/notifikasi" className="relative">
-                    <svg className="w-5 h-5 text-gray-500 hover:text-blue-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V4a1 1 0 10-2 0v1.083A6 6 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                    </svg>
-                    {notifCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
-                        {notifCount > 9 ? '9+' : notifCount}
-                      </span>
-                    )}
-                  </Link>
-                </>
+                <Link to="/klaim-saya" className={linkClass('/klaim-saya')}>Klaim Saya</Link>
               )}
 
               {/* Admin only */}
@@ -93,18 +78,35 @@ export default function Navbar() {
           </div>
 
           {/* Right Side */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-6">
             {user ? (
-              <div className="flex items-center gap-3">
-                <span className="text-gray-500 text-sm">
-                  Halo, <span className="text-gray-900 font-medium">{user.nama?.split(' ')[0]}</span>
-                </span>
-                <button
-                  onClick={handleLogout}
-                  className="text-sm bg-blue-700 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-800 transition-all shadow-sm"
-                >
-                  Logout
-                </button>
+              <div className="flex items-center gap-5">
+                {/* Mahasiswa only: Notifikasi Bell */}
+                {user?.role === 'mahasiswa' && (
+                  <Link to="/notifikasi" className="relative group">
+                    <svg className="w-5 h-5 text-gray-500 group-hover:text-blue-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V4a1 1 0 10-2 0v1.083A6 6 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                    {notifCount > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold border-2 border-white">
+                        {notifCount > 9 ? '9+' : notifCount}
+                      </span>
+                    )}
+                  </Link>
+                )}
+
+                <div className="flex items-center gap-3">
+                  <span className="text-gray-500 text-sm">
+                    Halo, <span className="text-gray-900 font-medium">{user.nama?.split(' ')[0]}</span>
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="text-sm bg-blue-700 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-800 transition-all shadow-sm"
+                  >
+                    Logout
+                  </button>
+                </div>
               </div>
             ) : (
               <Link

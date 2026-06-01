@@ -325,22 +325,6 @@ export default function Katalog() {
               </div>
             </div>
 
-            {/* CTA Mahasiswa */}
-            {user?.role === 'mahasiswa' && (
-              <div className="bg-blue-700 rounded-lg p-5">
-                <h2 className="text-base font-semibold text-white mb-1">Kehilangan sesuatu?</h2>
-                <p className="text-blue-200 text-sm mb-4">
-                  Laporkan barang hilangmu agar orang lain bisa membantumu menemukan.
-                </p>
-                <button
-                  onClick={() => navigate('/lapor')}
-                  className="w-full bg-white text-blue-700 text-sm font-medium py-2 rounded-md hover:bg-blue-50 transition-colors"
-                >
-                  Lapor Sekarang
-                </button>
-              </div>
-            )}
-
             {/* CTA Guest */}
             {!user && (
               <div className="bg-white border border-gray-200 rounded-lg p-5">
