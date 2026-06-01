@@ -74,7 +74,7 @@ export default function HomePage() {
 
         <div className="relative z-10 max-w-5xl mx-auto px-6 sm:px-10 py-20">
           <p className="text-blue-300 text-sm font-semibold tracking-widest uppercase mb-3">
-            IPB Lost &amp; Found System
+            LostnFound System
           </p>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-5">
             Lost Something?<br />
@@ -114,7 +114,7 @@ export default function HomePage() {
             karena si pemilik tak pernah melihat pengumuman.
           </p>
           <p className="font-medium text-gray-800">
-            Kami membangun sistem IPB Lost &amp; Found untuk mengubah itu. Dengan memusatkan
+            Kami membangun sistem LostnFound untuk mengubah itu. Dengan memusatkan
             semua laporan dalam satu hub aman, menerapkan teknologi auto-matching cerdas, dan
             memastikan verifikasi digital yang ketat — kami menjembatani gap antara barang
             hilang dan penemuannya. Kami tidak hanya membantu menemukan barangmu; kami
@@ -200,10 +200,7 @@ export default function HomePage() {
             {/* Brand */}
             <div className="col-span-2 sm:col-span-1">
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">LF</span>
-                </div>
-                <span className="text-white font-bold text-sm">IPB Lost &amp; Found</span>
+                <span className="text-white font-bold text-lg">LostnFound</span>
               </div>
               <p className="text-xs leading-relaxed">
                 Sistem terpusat untuk membantu warga IPB menemukan kembali barang-barang berharga mereka.
@@ -249,7 +246,7 @@ export default function HomePage() {
           </div>
 
           <div className="border-t border-gray-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p className="text-xs">© 2025 IPB Lost &amp; Found System. Hak cipta dilindungi.</p>
+            <p className="text-xs">© 2025 LostnFound System. Hak cipta dilindungi.</p>
             <p className="text-xs">Dibuat dengan ❤️ untuk warga IPB University</p>
           </div>
         </div>

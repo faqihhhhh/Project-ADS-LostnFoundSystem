@@ -58,22 +58,12 @@ class ItemService:
             limit=limit
         )
         
-        # Guest: sembunyikan foto barang FOUND
-        if current_user is None:
-            for item in items:
-                if item.tipe == ItemType.found:
-                    item.foto = []
-
         return items
 
     def get_detail(self, item_id: int, current_user: Optional[User]) -> Item:
         item = self.item_repo.get_by_id(item_id)
         if not item:
             raise HTTPException(status_code=404, detail="Barang tidak ditemukan")
-
-        # Guest: sembunyikan foto FOUND
-        if current_user is None and item.tipe == ItemType.found:
-            item.foto = []
 
         return item
 

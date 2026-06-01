@@ -1,5 +1,5 @@
 """
-Generates a complete, professional API Contract PDF for IPB Lost & Found System.
+Generates a complete, professional API Contract PDF for LostnFound System.
 Usage: venv\\Scripts\\python.exe generate_api_contract.py
 """
 
@@ -274,8 +274,8 @@ def build():
         pagesize=A4,
         leftMargin=2*cm, rightMargin=2*cm,
         topMargin=2*cm, bottomMargin=2*cm,
-        title="IPB Lost & Found — API Contract",
-        author="IPB Lost & Found Team",
+        title="LostnFound — API Contract",
+        author="LostnFound Team",
     )
 
     story = []
@@ -1500,7 +1500,7 @@ def build():
         canvas.saveState()
         canvas.setFont("Helvetica", 8)
         canvas.setFillColor(ACCENT_GREY)
-        canvas.drawString(2*cm, 1.2*cm, "IPB Lost & Found — API Contract v1.0")
+        canvas.drawString(2*cm, 1.2*cm, "LostnFound — API Contract v1.0")
         canvas.drawRightString(A4[0] - 2*cm, 1.2*cm, f"Page {doc.page}")
         canvas.restoreState()
 

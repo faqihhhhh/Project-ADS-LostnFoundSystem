@@ -25,6 +25,11 @@ export default function Dashboard() {
   const [kodeData, setKodeData]     = useState(null)
   const [kodeLoading, setKodeLoading] = useState(false)
 
+  // Modal Detail Barang
+  const [showDetail, setShowDetail]     = useState(false)
+  const [detailItem, setDetailItem]     = useState(null)
+  const [detailLoading, setDetailLoading] = useState(false)
+
   useEffect(() => { fetchAll() }, [])
 
   const fetchAll = async () => {
@@ -55,6 +60,20 @@ export default function Dashboard() {
     setCatatan('')
     setActionError('')
     setShowModal(true)
+  }
+
+  const openDetail = async (itemId) => {
+    setDetailItem(null)
+    setDetailLoading(true)
+    setShowDetail(true)
+    try {
+      const res = await api.get(`/items/${itemId}`)
+      setDetailItem(res.data)
+    } catch {
+      setShowDetail(false)
+    } finally {
+      setDetailLoading(false)
+    }
   }
 
   const handleAction = async () => {
@@ -121,7 +140,7 @@ export default function Dashboard() {
           <p className="text-xs text-gray-400 mt-0.5">{formatTanggal(item.created_at)}</p>
         </div>
         <button
-          onClick={() => navigate(`/barang/${item.item_id}`)}
+          onClick={() => openDetail(item.item_id)}
           className="text-xs text-blue-700 border border-blue-200 px-3 py-1.5 rounded-md hover:bg-blue-50 shrink-0"
         >
           Lihat Barang
@@ -203,7 +222,7 @@ export default function Dashboard() {
           <p className="text-xs text-gray-400 mt-1">{formatTanggal(item.created_at)}</p>
         </div>
         <button
-          onClick={() => navigate(`/barang/${item.lost_item_id}`)}
+          onClick={() => openDetail(item.lost_item_id)}
           className="text-xs text-blue-700 border border-blue-200 px-3 py-1.5 rounded-md hover:bg-blue-50 shrink-0"
         >
           Lihat Barang Hilang
@@ -286,11 +305,11 @@ export default function Dashboard() {
 
       {/* Link lihat kedua barang */}
       <div className="flex gap-2 mb-3">
-        <button onClick={() => navigate(`/barang/${item.found_item_id}`)}
+        <button onClick={() => openDetail(item.found_item_id)}
           className="flex-1 text-xs text-green-700 border border-green-200 py-1.5 rounded-md hover:bg-green-50">
           Lihat Barang Temuan →
         </button>
-        <button onClick={() => navigate(`/barang/${item.lost_item_id}`)}
+        <button onClick={() => openDetail(item.lost_item_id)}
           className="flex-1 text-xs text-red-600 border border-red-200 py-1.5 rounded-md hover:bg-red-50">
           Lihat Barang Hilang →
         </button>
@@ -497,6 +516,88 @@ export default function Dashboard() {
               className="w-full bg-blue-700 text-white text-sm font-medium py-2.5 rounded-md hover:bg-blue-800">
               Tutup
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL DETAIL BARANG ── */}
+      {showDetail && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4">
+          <div className="bg-white rounded-lg w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-semibold text-gray-900">Detail Barang</h2>
+              <button onClick={() => setShowDetail(false)} className="text-gray-400 hover:text-gray-600">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {detailLoading ? (
+              <div className="py-20 flex flex-col items-center justify-center">
+                <div className="w-10 h-10 border-2 border-blue-700 border-t-transparent rounded-full animate-spin mb-4" />
+                <p className="text-sm text-gray-400">Memuat detail barang...</p>
+              </div>
+            ) : detailItem ? (
+              <>
+                {/* Foto */}
+                {detailItem.foto?.length > 0 && (
+                  <div className="flex gap-2 mb-4 flex-wrap">
+                    {detailItem.foto.map((f, i) => (
+                      <a key={i} href={f.url.startsWith('http') ? f.url : `${import.meta.env.VITE_API_URL}${f.url}`} target="_blank" rel="noreferrer">
+                        <img src={f.url.startsWith('http') ? f.url : `${import.meta.env.VITE_API_URL}${f.url}`} alt=""
+                          className="w-24 h-24 object-cover rounded-md border border-gray-200 hover:opacity-80" />
+                      </a>
+                    ))}
+                  </div>
+                )}
+
+                {/* Info Grid */}
+                <div className="space-y-3">
+                  {[
+                    { label: 'ID',                   value: `#${detailItem.id}` },
+                    { label: 'Tipe',                 value: detailItem.tipe },
+                    { label: 'Status',               value: detailItem.status },
+                    { label: 'Kategori',             value: detailItem.kategori },
+                    { label: 'Nama Publik',          value: detailItem.nama_publik },
+                    { label: 'Deskripsi Detail',     value: detailItem.deskripsi_detail || '-' },
+                    { label: 'Lokasi Ditemukan',     value: detailItem.lokasi_ditemukan || '-' },
+                    { label: 'Lokasi Sekarang',      value: detailItem.lokasi_sekarang || '-' },
+                    { label: 'Kemungkinan Lokasi',   value: detailItem.lokasi_kemungkinan?.join(', ') || '-' },
+                    { label: 'Pelapor',              value: detailItem.user_nama || '-' },
+                    { label: 'Tanggal Kejadian',     value: detailItem.tanggal ? new Date(detailItem.tanggal).toLocaleString('id-ID') : '-' },
+                    { label: 'Dilaporkan',           value: detailItem.created_at ? new Date(detailItem.created_at).toLocaleString('id-ID') : '-' },
+                  ].map(row => (
+                    <div key={row.label} className="flex gap-3">
+                      <p className="text-xs text-gray-400 w-36 shrink-0 pt-0.5">{row.label}</p>
+                      <p className="text-sm text-gray-700 flex-1 capitalize">{row.value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Bukti Kepemilikan */}
+                {detailItem.bukti_kepemilikan?.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <p className="text-xs text-gray-400 mb-2">Bukti Kepemilikan (Khusus LOST):</p>
+                    <div className="flex gap-2 flex-wrap">
+                      {detailItem.bukti_kepemilikan.map((url, i) => (
+                        <a key={i} href={url.startsWith('http') ? url : `${import.meta.env.VITE_API_URL}${url}`} target="_blank" rel="noreferrer">
+                          <img src={url.startsWith('http') ? url : `${import.meta.env.VITE_API_URL}${url}`} alt=""
+                            className="w-20 h-20 object-cover rounded-md border border-gray-200 hover:opacity-80" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <button onClick={() => setShowDetail(false)}
+                  className="w-full mt-6 bg-blue-700 text-white text-sm font-medium py-2.5 rounded-md hover:bg-blue-800">
+                  Tutup
+                </button>
+              </>
+            ) : (
+              <p className="text-center text-gray-500 py-10">Gagal memuat detail barang</p>
+            )}
           </div>
         </div>
       )}

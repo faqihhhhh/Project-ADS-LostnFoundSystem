@@ -43,10 +43,7 @@ export default function Login() {
 
         {/* Header */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-12 h-12 bg-blue-700 rounded-lg flex items-center justify-center mb-3">
-            <span className="text-white font-bold text-lg">LF</span>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900">IPB Lost & Found</h1>
+          <h1 className="text-3xl font-bold text-blue-700">LostnFound</h1>
           <p className="text-sm text-gray-500 mt-1">Masuk dengan akun IPB kamu</p>
         </div>
 

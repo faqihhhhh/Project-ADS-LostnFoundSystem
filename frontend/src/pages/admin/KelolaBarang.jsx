@@ -363,9 +363,6 @@ export default function KelolaBarang() {
                       <button onClick={() => openDetail(item)} className="p-1.5 text-gray-400 hover:text-blue-700 rounded-md">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" strokeWidth={2} /><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" strokeWidth={2} /></svg>
                       </button>
-                      <button onClick={() => navigate(`/barang/${item.id}`)} className="p-1.5 text-gray-400 hover:text-green-600 rounded-md">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" strokeWidth={2} /></svg>
-                      </button>
                       <button onClick={() => openHapus(item)} className="p-1.5 text-gray-400 hover:text-red-600 rounded-md">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" strokeWidth={2} /></svg>
                       </button>
@@ -415,6 +412,7 @@ export default function KelolaBarang() {
                 { label: 'Lokasi Ditemukan',     value: detailItem.lokasi_ditemukan || '-' },
                 { label: 'Lokasi Sekarang',      value: detailItem.lokasi_sekarang || '-' },
                 { label: 'Kemungkinan Lokasi',   value: detailItem.lokasi_kemungkinan?.join(', ') || '-' },
+                { label: 'Pelapor',              value: detailItem.user_nama || '-' },
                 { label: 'Tanggal Kejadian',     value: detailItem.tanggal ? new Date(detailItem.tanggal).toLocaleString('id-ID') : '-' },
                 { label: 'Dilaporkan',           value: detailItem.created_at ? new Date(detailItem.created_at).toLocaleString('id-ID') : '-' },
                 { label: 'Expired At',           value: detailItem.expired_at ? new Date(detailItem.expired_at).toLocaleString('id-ID') : '-' },

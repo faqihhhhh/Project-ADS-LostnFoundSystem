@@ -42,11 +42,8 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-white rounded-md flex items-center justify-center">
-              <span className="text-blue-700 font-bold text-sm">LF</span>
-            </div>
-            <span className="text-white font-bold text-base hidden sm:block">
-              IPB Lost & Found
+            <span className="text-white font-bold text-lg">
+              LostnFound
             </span>
           </Link>
 

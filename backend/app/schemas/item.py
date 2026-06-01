@@ -45,6 +45,7 @@ class ItemCreate(BaseModel):
 class ItemOut(BaseModel):
     id: int
     user_id: int
+    user_nama: Optional[str] = None
     tipe: ItemType
     status: ItemStatus
     kategori: ItemCategory
