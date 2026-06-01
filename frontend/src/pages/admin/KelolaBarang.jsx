@@ -167,12 +167,6 @@ export default function KelolaBarang() {
               Lihat dan kelola semua laporan barang di sistem
             </p>
           </div>
-          <button
-            onClick={() => navigate('/admin')}
-            className="text-sm text-blue-700 border border-blue-200 px-4 py-2 rounded-md hover:bg-blue-50"
-          >
-            ← Dashboard
-          </button>
         </div>
 
         {/* Stats */}
@@ -412,9 +406,9 @@ export default function KelolaBarang() {
                 { label: 'Kategori',             value: detailItem.kategori },
                 { label: 'Nama Publik',          value: detailItem.nama_publik },
                 { label: 'Deskripsi Detail',     value: detailItem.deskripsi_detail || '-' },
-                { label: 'Lokasi Ditemukan',     value: detailItem.lokasi_ditemukan || '-' },
+                { label: 'Lokasi (Resmi)',       value: detailItem.lokasi_ditemukan_list || detailItem.lokasi_kemungkinan_list?.join(', ') || '-' },
+                { label: 'Detail Lokasi',        value: detailItem.lokasi_ditemukan || detailItem.lokasi_kemungkinan?.join(', ') || '-' },
                 { label: 'Lokasi Sekarang',      value: detailItem.lokasi_sekarang || '-' },
-                { label: 'Kemungkinan Lokasi',   value: detailItem.lokasi_kemungkinan?.join(', ') || '-' },
                 { label: 'Pelapor',              value: detailItem.user_nama || '-' },
                 { label: 'Tanggal Kejadian',     value: detailItem.tanggal ? new Date(detailItem.tanggal).toLocaleString('id-ID') : '-' },
                 { label: 'Dilaporkan',           value: detailItem.created_at ? new Date(detailItem.created_at).toLocaleString('id-ID') : '-' },

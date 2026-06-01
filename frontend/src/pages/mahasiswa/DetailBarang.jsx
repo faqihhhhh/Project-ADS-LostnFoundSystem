@@ -281,7 +281,7 @@ export default function DetailBarang() {
                 </div>
 
                 {/* Lokasi FOUND */}
-                {item.tipe === 'FOUND' && item.lokasi_ditemukan && (
+                {item.tipe === 'FOUND' && (item.lokasi_ditemukan_list || item.lokasi_ditemukan) && (
                   <div className="flex items-start gap-3">
                     <svg className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -289,7 +289,10 @@ export default function DetailBarang() {
                     </svg>
                     <div>
                       <p className="text-xs text-gray-400">Ditemukan di</p>
-                      <p className="text-sm text-gray-700">{item.lokasi_ditemukan}</p>
+                      <p className="text-sm text-gray-700">
+                        {item.lokasi_ditemukan_list}
+                        {item.lokasi_ditemukan && <span className="block text-xs text-gray-500 mt-0.5">{item.lokasi_ditemukan}</span>}
+                      </p>
                     </div>
                   </div>
                 )}
@@ -309,7 +312,7 @@ export default function DetailBarang() {
                 )}
 
                 {/* Lokasi Kemungkinan LOST */}
-                {item.tipe === 'LOST' && item.lokasi_kemungkinan?.length > 0 && (
+                {item.tipe === 'LOST' && (item.lokasi_kemungkinan_list?.length > 0 || item.lokasi_kemungkinan?.length > 0) && (
                   <div className="flex items-start gap-3">
                     <svg className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -318,8 +321,13 @@ export default function DetailBarang() {
                     <div>
                       <p className="text-xs text-gray-400">Kemungkinan hilang di</p>
                       <div className="flex flex-wrap gap-1 mt-1">
-                        {item.lokasi_kemungkinan.map((lok, i) => (
-                          <span key={i} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                        {item.lokasi_kemungkinan_list?.map((lok, i) => (
+                          <span key={`enum-${i}`} className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full border border-blue-100">
+                            {lok}
+                          </span>
+                        ))}
+                        {item.lokasi_kemungkinan?.map((lok, i) => (
+                          <span key={`str-${i}`} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
                             {lok}
                           </span>
                         ))}

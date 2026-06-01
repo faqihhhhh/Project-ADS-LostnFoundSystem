@@ -8,38 +8,26 @@ from app.models.item import ItemType, ItemStatus, ItemCategory, ItemLocation, IP
 class ItemFotoOut(BaseModel):
     id: int
     url: str
-
     class Config:
         from_attributes = True
 
+# Request untuk membuat laporan (FOUND / LOST)
 class ItemCreate(BaseModel):
     tipe: ItemType
     kategori: ItemCategory
-    nama_publik: str                            # nama generik — wajib
-    deskripsi_detail: Optional[str] = None      # detail hanya untuk admin
-
-    # FOUND
+    nama_publik: str
+    deskripsi_detail: Optional[str] = None
+    
+    # Lokasi untuk FOUND
+    lokasi_ditemukan_list: Optional[IPBLocation] = None
     lokasi_ditemukan: Optional[str] = None
     lokasi_sekarang: Optional[IPBLocation] = None
-    lokasi_ditemukan_list: Optional[ItemLocation] = None
-
-    # LOST
-    lokasi_kemungkinan: Optional[List[str]] = None
-    lokasi_kemungkinan_list: Optional[List[ItemLocation]] = None
-
+    
+    # Lokasi untuk LOST (Multi-lokasi)
+    lokasi_kemungkinan_list: Optional[List[IPBLocation]] = []
+    lokasi_kemungkinan: Optional[List[str]] = []
+    
     tanggal: datetime
-
-    @model_validator(mode="after")
-    def validasi_field_per_tipe(self):
-        if self.tipe == ItemType.found:
-            if not self.lokasi_ditemukan:
-                raise ValueError("lokasi_ditemukan wajib diisi untuk barang temuan")
-            if not self.lokasi_sekarang:
-                raise ValueError("lokasi_sekarang wajib diisi untuk barang temuan")
-        if self.tipe == ItemType.lost:
-            if not self.lokasi_kemungkinan:
-                raise ValueError("lokasi_kemungkinan wajib diisi untuk barang hilang")
-        return self
 
 # Response lengkap — untuk pemilik/penemu dan admin
 class ItemOut(BaseModel):
@@ -51,36 +39,32 @@ class ItemOut(BaseModel):
     kategori: ItemCategory
     nama_publik: str
     deskripsi_detail: Optional[str] = None
+    lokasi_ditemukan_list: Optional[IPBLocation] = None
     lokasi_ditemukan: Optional[str] = None
     lokasi_sekarang: Optional[IPBLocation] = None
+    lokasi_kemungkinan_list: Optional[List[IPBLocation]] = None
     lokasi_kemungkinan: Optional[List[str]] = None
-    bukti_kepemilikan: Optional[List[str]] = None
-    lokasi_ditemukan_list: Optional[ItemLocation] = None
-    lokasi_kemungkinan_list: Optional[List[ItemLocation]] = None
     tanggal: datetime
-    expired_at: Optional[datetime] = None
-    created_at: datetime
-    foto: List[ItemFotoOut] = []
+    expired_at: Optional[datetime] = None       # untuk info kadaluarsa
+    foto: List[ItemFotoOut] = []                # foto FOUND disembunyikan untuk guest
 
     class Config:
         from_attributes = True
 
-# Response publik — untuk mahasiswa lain dan guest
-# Sengaja disembunyikan: deskripsi_detail, lokasi_sekarang, bukti_kepemilikan
-class ItemOutPublik(BaseModel):
+# Response publik — untuk pencarian di katalog
+class ItemOutPublic(BaseModel):
     id: int
-    user_id: int                                # untuk cek isOwner di frontend
     tipe: ItemType
     status: ItemStatus
     kategori: ItemCategory
-    nama_publik: str                            # hanya nama universal
-    lokasi_ditemukan: Optional[str] = None      # FOUND: tempat ditemukan saja
-    lokasi_kemungkinan: Optional[List[str]] = None  # LOST: area kemungkinan
-    lokasi_ditemukan_list: Optional[ItemLocation] = None
-    lokasi_kemungkinan_list: Optional[List[ItemLocation]] = None
+    nama_publik: str
+    lokasi_ditemukan_list: Optional[IPBLocation] = None
+    lokasi_ditemukan: Optional[str] = None
+    lokasi_kemungkinan_list: Optional[List[IPBLocation]] = None
+    lokasi_kemungkinan: Optional[List[str]] = None
     tanggal: datetime
-    expired_at: Optional[datetime] = None       # untuk info kadaluarsa
-    foto: List[ItemFotoOut] = []                # foto FOUND disembunyikan untuk guest
+    expired_at: Optional[datetime] = None
+    foto: List[ItemFotoOut] = []
 
     class Config:
         from_attributes = True

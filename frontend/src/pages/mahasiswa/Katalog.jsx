@@ -333,18 +333,21 @@ export default function Katalog() {
             {/* Info Sistem */}
             <div className="bg-white border border-gray-200 rounded-lg p-5">
               <h2 className="text-base font-semibold text-gray-900 mb-3">Cara Kerja</h2>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {[
-                  { no: '1', text: 'Temukan barang? Lapor ke sistem' },
-                  { no: '2', text: 'Kehilangan? Buat laporan barang hilang' },
-                  { no: '3', text: 'Ajukan klaim jika barang itu milikmu' },
-                  { no: '4', text: 'Admin verifikasi dan hubungi kamu' },
+                  { no: '1', title: 'Lapor', text: 'Temukan atau hilangkan barang? Buat laporan dengan lokasi dan foto yang jelas.' },
+                  { no: '2', title: 'Verifikasi', text: 'Admin akan memeriksa laporan dan bukti yang kamu berikan.' },
+                  { no: '3', title: 'Match', text: 'Sistem otomatis memberitahumu jika ada barang yang cocok.' },
+                  { no: '4', title: 'Ambil', text: 'Tunjukkan kode pengambilan ke petugas di lokasi penyimpanan.' },
                 ].map(step => (
                   <div key={step.no} className="flex items-start gap-3">
-                    <span className="w-5 h-5 bg-blue-700 text-white text-xs font-bold rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="w-6 h-6 bg-blue-700 text-white text-xs font-bold rounded-full flex items-center justify-center shrink-0 mt-0.5">
                       {step.no}
                     </span>
-                    <p className="text-sm text-gray-600">{step.text}</p>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">{step.title}</p>
+                      <p className="text-xs text-gray-500 leading-relaxed mt-0.5">{step.text}</p>
+                    </div>
                   </div>
                 ))}
               </div>
