@@ -120,17 +120,6 @@ export default function Katalog() {
                   <p className="text-sm text-gray-500">
                     {items.length} barang ditemukan
                   </p>
-                  {user?.role === 'mahasiswa' && (
-                    <button
-                      onClick={() => navigate('/rekomendasi')}
-                      className="text-xs font-medium text-blue-700 hover:text-blue-800 flex items-center gap-1 bg-blue-50 px-2 py-1 rounded"
-                    >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
-                      Lihat Rekomendasi Cocok
-                    </button>
-                  )}
                 </div>
               </div>
               {user?.role === 'mahasiswa' && (

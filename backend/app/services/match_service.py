@@ -82,12 +82,29 @@ class MatchService:
         existing = self.match_repo.get_by_found_and_lost(found_id, lost_id)
         if existing:
             return None
+        
         match = ItemMatch(
             found_item_id=found_id,
             lost_item_id=lost_id,
             alasan_match=alasan
         )
-        return self.match_repo.save(match)
+        saved_match = self.match_repo.save(match)
+        
+        # Kirim notifikasi awal (pre-approval) ke kedua pihak
+        # 1. Ke pemilik barang hilang (Owner)
+        self.notif_service.kirim(
+            user_id=saved_match.lost_item.user_id,
+            judul="Potensi kecocokan ditemukan!",
+            pesan=f"Sistem mendeteksi ada barang temuan yang cocok dengan laporan hilangmu '{saved_match.lost_item.nama_publik}'. Admin akan memverifikasi ini segera."
+        )
+        # 2. Ke penemu barang (Founder)
+        self.notif_service.kirim(
+            user_id=saved_match.found_item.user_id,
+            judul="Barang temuanmu mungkin ada pemiliknya!",
+            pesan=f"Sistem mendeteksi ada laporan hilang yang cocok dengan barang temuanmu '{saved_match.found_item.nama_publik}'. Admin akan memverifikasi ini segera."
+        )
+        
+        return saved_match
 
     def get_pending(self, skip: int = 0, limit: int = 24) -> list[ItemMatch]:
         return self.match_repo.get_pending(skip, limit)
