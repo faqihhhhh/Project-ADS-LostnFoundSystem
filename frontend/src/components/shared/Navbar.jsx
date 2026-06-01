@@ -40,53 +40,56 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
 
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <span className="text-blue-700 font-bold text-lg tracking-tight">
-              LostnFound
-            </span>
-          </Link>
+          {/* Left Side: Logo + Navigation */}
+          <div className="flex items-center gap-10">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2 shrink-0">
+              <span className="text-blue-700 font-bold text-lg tracking-tight">
+                LostnFound
+              </span>
+            </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-6">
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center gap-6">
 
-            {/* Guest & Mahasiswa */}
-            {user?.role !== 'admin' && (
-              <>
-                <Link to="/" className={linkClass('/')}>Beranda</Link>
-                <Link to="/katalog" className={linkClass('/katalog')}>Database Barang</Link>
-                <Link to="/lapor" className={linkClass('/lapor')}>Lapor Barang</Link>
-                <Link to="/leaderboard" className={linkClass('/leaderboard')}>Leaderboard</Link>
-              </>
-            )}
+              {/* Guest & Mahasiswa */}
+              {user?.role !== 'admin' && (
+                <>
+                  <Link to="/" className={linkClass('/')}>Beranda</Link>
+                  <Link to="/katalog" className={linkClass('/katalog')}>Database Barang</Link>
+                  <Link to="/lapor" className={linkClass('/lapor')}>Lapor Barang</Link>
+                  <Link to="/leaderboard" className={linkClass('/leaderboard')}>Leaderboard</Link>
+                </>
+              )}
 
-            {/* Mahasiswa only */}
-            {user?.role === 'mahasiswa' && (
-              <>
-                <Link to="/klaim-saya" className={linkClass('/klaim-saya')}>Klaim Saya</Link>
+              {/* Mahasiswa only */}
+              {user?.role === 'mahasiswa' && (
+                <>
+                  <Link to="/klaim-saya" className={linkClass('/klaim-saya')}>Klaim Saya</Link>
 
-                {/* Notifikasi Bell */}
-                <Link to="/notifikasi" className="relative">
-                  <svg className="w-5 h-5 text-gray-500 hover:text-blue-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V4a1 1 0 10-2 0v1.083A6 6 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                  </svg>
-                  {notifCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
-                      {notifCount > 9 ? '9+' : notifCount}
-                    </span>
-                  )}
-                </Link>
-              </>
-            )}
+                  {/* Notifikasi Bell */}
+                  <Link to="/notifikasi" className="relative">
+                    <svg className="w-5 h-5 text-gray-500 hover:text-blue-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V4a1 1 0 10-2 0v1.083A6 6 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                    {notifCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
+                        {notifCount > 9 ? '9+' : notifCount}
+                      </span>
+                    )}
+                  </Link>
+                </>
+              )}
 
-            {/* Admin only */}
-            {user?.role === 'admin' && (
-              <>
-                <Link to="/admin" className={linkClass('/admin')}>Dashboard</Link>
-                <Link to="/admin/barang" className={linkClass('/admin/barang')}>Kelola Barang</Link>
-              </>
-            )}
+              {/* Admin only */}
+              {user?.role === 'admin' && (
+                <>
+                  <Link to="/admin" className={linkClass('/admin')}>Dashboard</Link>
+                  <Link to="/admin/barang" className={linkClass('/admin/barang')}>Kelola Barang</Link>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Right Side */}
