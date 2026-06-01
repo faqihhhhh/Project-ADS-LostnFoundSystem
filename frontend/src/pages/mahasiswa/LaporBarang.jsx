@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../../components/shared/Navbar'
+import Footer from '../../components/shared/Footer'
 import api from '../../services/api'
 
 const KATEGORI = ['elektronik', 'dompet', 'kunci', 'kartu', 'pakaian', 'tas', 'botol', 'lainnya']
@@ -233,10 +234,10 @@ export default function LaporBarang() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
+      <main className="flex-1 max-w-2xl mx-auto px-4 sm:px-6 py-8 w-full">
 
         {/* Header */}
         <div className="mb-6">
@@ -464,13 +465,6 @@ export default function LaporBarang() {
                 </div>
               )}
 
-              {/* Datalist for locations */}
-              <datalist id="lokasi-list">
-                {LOKASI_OPTIONS.map(loc => (
-                  <option key={loc} value={loc} />
-                ))}
-              </datalist>
-
               {/* Error */}
               {error && (
                 <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-md">
@@ -522,7 +516,7 @@ export default function LaporBarang() {
                 {fotoPreviews.length > 0 && (
                   <div className="flex gap-2 mt-3 flex-wrap">
                     {fotoPreviews.map((src, i) => (
-                      <img key={i} src={src} alt="" className="w-20 h-20 object-cover rounded-md border border-gray-200" />
+                      <img key={i} src={src} alt="" className="w-16 h-16 object-cover rounded-md border border-gray-200" />
                     ))}
                   </div>
                 )}
@@ -550,7 +544,7 @@ export default function LaporBarang() {
                   {buktiPreviews.length > 0 && (
                     <div className="flex gap-2 mt-3 flex-wrap">
                       {buktiPreviews.map((src, i) => (
-                        <img key={i} src={src} alt="" className="w-20 h-20 object-cover rounded-md border border-gray-200" />
+                        <img key={i} src={src} alt="" className="w-16 h-16 object-cover rounded-md border border-gray-200" />
                       ))}
                     </div>
                   )}
@@ -603,7 +597,9 @@ export default function LaporBarang() {
             </div>
           )}
         </div>
-      </div>
+      </main>
+
+      <Footer />
     </div>
   )
 }

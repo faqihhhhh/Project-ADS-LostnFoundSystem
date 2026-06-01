@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../../components/shared/Navbar'
 import ItemCard from '../../components/shared/ItemCard'
+import Footer from '../../components/shared/Footer'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../services/api'
 
@@ -102,10 +103,10 @@ export default function Katalog() {
     : tipe === 'LOST' ? lostItems : foundItems
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         <div className="flex flex-col lg:flex-row gap-6">
 
           {/* ── KIRI: Main Content ── */}
@@ -377,7 +378,9 @@ export default function Katalog() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
+
+      <Footer />
 
       {/* Mobile FAB */}
       {user?.role === 'mahasiswa' && (

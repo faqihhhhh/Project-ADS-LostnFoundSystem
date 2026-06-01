@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../../components/shared/Navbar'
+import Footer from '../../components/shared/Footer'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../services/api'
 
@@ -54,10 +55,10 @@ export default function Leaderboard() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+      <main className="flex-1 max-w-3xl mx-auto px-4 sm:px-6 py-8 w-full">
 
         {/* Header */}
         <div className="mb-6">
@@ -253,7 +254,9 @@ export default function Leaderboard() {
             </a>
           </div>
         )}
-      </div>
+      </main>
+
+      <Footer />
     </div>
   )
 }

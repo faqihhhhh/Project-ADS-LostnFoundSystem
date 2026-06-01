@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../../components/shared/Navbar'
+import Footer from '../../components/shared/Footer'
 import api from '../../services/api'
 
 export default function Notifikasi() {
@@ -87,10 +88,10 @@ export default function Notifikasi() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
+      <main className="flex-1 max-w-2xl mx-auto px-4 sm:px-6 py-8 w-full">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -188,7 +189,9 @@ export default function Notifikasi() {
           </svg>
           Kembali ke Katalog
         </button>
-      </div>
+      </main>
+
+      <Footer />
     </div>
   )
 }

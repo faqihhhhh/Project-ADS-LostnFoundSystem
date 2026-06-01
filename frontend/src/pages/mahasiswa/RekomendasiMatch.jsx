@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../../components/shared/Navbar'
 import Badge from '../../components/shared/Badge'
+import Footer from '../../components/shared/Footer'
 import api from '../../services/api'
 
 export default function RekomendasiMatch() {
@@ -29,9 +30,10 @@ export default function RekomendasiMatch() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
-      <div className="max-w-2xl mx-auto px-4 py-8">
+      
+      <main className="flex-1 max-w-2xl mx-auto px-4 py-8 w-full">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Rekomendasi Barang Cocok</h1>
           <p className="text-sm text-gray-500 mt-1">
@@ -72,7 +74,9 @@ export default function RekomendasiMatch() {
             ))}
           </div>
         )}
-      </div>
+      </main>
+
+      <Footer />
     </div>
   )
 }

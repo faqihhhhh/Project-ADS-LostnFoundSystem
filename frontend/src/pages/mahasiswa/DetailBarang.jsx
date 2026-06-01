@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Navbar from '../../components/shared/Navbar'
 import Badge from '../../components/shared/Badge'
+import Footer from '../../components/shared/Footer'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../services/api'
 
@@ -165,9 +166,9 @@ export default function DetailBarang() {
   }
 
   if (loading) return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="flex-1 max-w-4xl mx-auto px-4 py-8 w-full">
         <div className="bg-white border border-gray-200 rounded-lg p-6 animate-pulse">
           <div className="flex gap-6">
             <div className="w-64 h-64 bg-gray-100 rounded-lg shrink-0" />
@@ -179,6 +180,7 @@ export default function DetailBarang() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 
@@ -190,10 +192,10 @@ export default function DetailBarang() {
   const canReport   = isMahasiswa && item.tipe === 'LOST'  && item.status === 'OPEN' && !isOwner
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
 
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
@@ -404,7 +406,9 @@ export default function DetailBarang() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
+
+      <Footer />
 
       {/* ── MODAL KLAIM ── */}
       {showKlaim && (

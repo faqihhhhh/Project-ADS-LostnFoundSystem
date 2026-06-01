@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../../components/shared/Navbar'
 import Badge from '../../components/shared/Badge'
+import AdminFooter from '../../components/shared/AdminFooter'
 import api from '../../services/api'
 
 export default function Dashboard() {
@@ -342,10 +343,10 @@ export default function Dashboard() {
   const CardComponent   = { claims: ClaimCard, reports: ReportCard, matches: MatchCard }[tab]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 py-8 w-full">
 
         {/* Header */}
         <div className="mb-6">
@@ -427,7 +428,9 @@ export default function Dashboard() {
             ))}
           </div>
         )}
-      </div>
+      </main>
+
+      <AdminFooter />
 
       {/* ── MODAL APPROVE / REJECT ── */}
       {showModal && modalData && (
