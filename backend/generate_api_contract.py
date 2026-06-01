@@ -1079,7 +1079,7 @@ def build():
         ["id", "integer", "Match unique ID"],
         ["found_item_id", "integer", "ID of the FOUND item"],
         ["lost_item_id", "integer", "ID of the LOST item"],
-        ["alasan_match", "string", "System-generated explanation (e.g. 'Kategori sama: dompet | Lokasi berdekatan: FEM')"],
+        ["alasan_match", "string", "System-generated explanation (e.g. 'Kategori sama: dompet | Kecocokan Lokasi: FEM')"],
         ["status", "MatchStatus", "PENDING | CONFIRMED | REJECTED"],
         ["catatan_admin", "string | null", "Admin note when confirming/rejecting"],
         ["created_at", "datetime", "When the match was detected"],

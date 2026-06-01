@@ -74,8 +74,7 @@ class MatchService:
     def _build_alasan(self, found_item: Item, lost_item: Item) -> str:
         return (
             f"Kategori sama: {found_item.kategori.value} | "
-            f"Lokasi temuan: {found_item.lokasi_ditemukan} | "
-            f"Lokasi kemungkinan hilang: {', '.join(lost_item.lokasi_kemungkinan or [])}"
+            f"Kecocokan Lokasi: {found_item.lokasi_ditemukan_list.value}"
         )
 
     def _create_match(self, found_id: int, lost_id: int, alasan: str) -> ItemMatch | None:
