@@ -52,7 +52,7 @@ class ItemOut(BaseModel):
         from_attributes = True
 
 # Response publik — untuk pencarian di katalog
-class ItemOutPublik(BaseModel):
+class ItemOutPublic(BaseModel):
     id: int
     tipe: ItemType
     status: ItemStatus
