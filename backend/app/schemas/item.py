@@ -19,12 +19,12 @@ class ItemCreate(BaseModel):
     deskripsi_detail: Optional[str] = None
     
     # Lokasi untuk FOUND
-    lokasi_ditemukan_list: Optional[IPBLocation] = None
+    lokasi_ditemukan_list: Optional[ItemLocation] = None
     lokasi_ditemukan: Optional[str] = None
     lokasi_sekarang: Optional[IPBLocation] = None
     
     # Lokasi untuk LOST (Multi-lokasi)
-    lokasi_kemungkinan_list: Optional[List[IPBLocation]] = []
+    lokasi_kemungkinan_list: Optional[List[ItemLocation]] = []
     lokasi_kemungkinan: Optional[List[str]] = []
     
     tanggal: datetime
@@ -39,10 +39,10 @@ class ItemOut(BaseModel):
     kategori: ItemCategory
     nama_publik: str
     deskripsi_detail: Optional[str] = None
-    lokasi_ditemukan_list: Optional[IPBLocation] = None
+    lokasi_ditemukan_list: Optional[ItemLocation] = None
     lokasi_ditemukan: Optional[str] = None
     lokasi_sekarang: Optional[IPBLocation] = None
-    lokasi_kemungkinan_list: Optional[List[IPBLocation]] = None
+    lokasi_kemungkinan_list: Optional[List[ItemLocation]] = None
     lokasi_kemungkinan: Optional[List[str]] = None
     tanggal: datetime
     expired_at: Optional[datetime] = None       # untuk info kadaluarsa
@@ -58,9 +58,9 @@ class ItemOutPublik(BaseModel):
     status: ItemStatus
     kategori: ItemCategory
     nama_publik: str
-    lokasi_ditemukan_list: Optional[IPBLocation] = None
+    lokasi_ditemukan_list: Optional[ItemLocation] = None
     lokasi_ditemukan: Optional[str] = None
-    lokasi_kemungkinan_list: Optional[List[IPBLocation]] = None
+    lokasi_kemungkinan_list: Optional[List[ItemLocation]] = None
     lokasi_kemungkinan: Optional[List[str]] = None
     tanggal: datetime
     expired_at: Optional[datetime] = None

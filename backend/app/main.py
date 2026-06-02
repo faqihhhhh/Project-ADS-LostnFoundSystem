@@ -17,6 +17,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "https://project-ads-lostn-found-system.vercel.app",
+        "https://project-ads-lostn-found-system-git-main-faqihhhhhs-projects.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
