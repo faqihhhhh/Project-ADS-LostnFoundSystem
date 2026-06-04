@@ -155,6 +155,10 @@ class Item(Base):
     def user_nama(self):
         return self.user.nama if self.user else None
 
+    @property
+    def user_nim(self):
+        return self.user.nim if self.user else None
+
     claims = relationship("Claim", back_populates="item", cascade="all, delete")
     matches_as_found = relationship("ItemMatch", foreign_keys="ItemMatch.found_item_id", back_populates="found_item", cascade="all, delete")
     matches_as_lost  = relationship("ItemMatch", foreign_keys="ItemMatch.lost_item_id",  back_populates="lost_item",  cascade="all, delete")

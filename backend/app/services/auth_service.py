@@ -16,4 +16,9 @@ class AuthService:
             raise HTTPException(status_code=403, detail="Akun dinonaktifkan")
 
         token = create_access_token(data={"sub": user.username, "role": user.role})
-        return TokenResponse(access_token=token, role=user.role, nama=user.nama)
+        return TokenResponse(
+            access_token=token, 
+            role=user.role, 
+            nama=user.nama, 
+            id=user.id
+        )

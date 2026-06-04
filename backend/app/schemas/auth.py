@@ -11,6 +11,7 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     role: UserRole
     nama: str
+    id: int
 
 class UserOut(BaseModel):
     id: int

@@ -34,6 +34,7 @@ class ItemOut(BaseModel):
     id: int
     user_id: int
     user_nama: Optional[str] = None
+    user_nim: Optional[str] = None
     tipe: ItemType
     status: ItemStatus
     kategori: ItemCategory
@@ -54,6 +55,7 @@ class ItemOut(BaseModel):
 # Response publik — untuk pencarian di katalog
 class ItemOutPublik(BaseModel):
     id: int
+    user_id: int
     tipe: ItemType
     status: ItemStatus
     kategori: ItemCategory
