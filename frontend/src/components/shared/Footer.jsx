@@ -26,7 +26,7 @@ export default function Footer() {
           <div>
             <h4 className="text-gray-900 text-sm font-semibold mb-4">Fitur</h4>
             <ul className="space-y-2 text-xs">
-              {['Database Barang', 'Lapor Barang', 'Klaim Barang', 'Auto Match', 'Leaderboard'].map(l => (
+              {['Katalog Barang', 'Lapor Barang', 'Klaim Barang', 'Auto Match', 'Leaderboard'].map(l => (
                 <li key={l}><span className="hover:text-blue-700 cursor-pointer transition-colors">{l}</span></li>
               ))}
             </ul>

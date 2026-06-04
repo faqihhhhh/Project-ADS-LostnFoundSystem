@@ -56,7 +56,7 @@ export default function Navbar() {
               {user?.role !== 'admin' && (
                 <>
                   <Link to="/" className={linkClass('/')}>Beranda</Link>
-                  <Link to="/katalog" className={linkClass('/katalog')}>Database Barang</Link>
+                  <Link to="/katalog" className={linkClass('/katalog')}>Katalog Barang</Link>
                   <Link to="/lapor" className={linkClass('/lapor')}>Lapor Barang</Link>
                   <Link to="/leaderboard" className={linkClass('/leaderboard')}>Leaderboard</Link>
                 </>
@@ -64,7 +64,7 @@ export default function Navbar() {
 
               {/* Mahasiswa only */}
               {user?.role === 'mahasiswa' && (
-                <Link to="/klaim-saya" className={linkClass('/klaim-saya')}>Klaim Saya</Link>
+                <Link to="/klaim-saya" className={linkClass('/klaim-saya')}>Aktivitas Saya</Link>
               )}
 
               {/* Admin only */}
@@ -140,7 +140,7 @@ export default function Navbar() {
                 <Link to="/" className="text-gray-600 text-sm font-medium px-2 py-1"
                   onClick={() => setMenuOpen(false)}>Beranda</Link>
                 <Link to="/katalog" className="text-gray-600 text-sm font-medium px-2 py-1"
-                  onClick={() => setMenuOpen(false)}>Database Barang</Link>
+                  onClick={() => setMenuOpen(false)}>Katalog Barang</Link>
                 <Link to="/lapor" className="text-gray-600 text-sm font-medium px-2 py-1"
                   onClick={() => setMenuOpen(false)}>Lapor Barang</Link>
                 <Link to="/leaderboard" className="text-gray-600 text-sm font-medium px-2 py-1"
@@ -150,7 +150,7 @@ export default function Navbar() {
             {user?.role === 'mahasiswa' && (
               <>
                 <Link to="/klaim-saya" className="text-gray-600 text-sm font-medium px-2 py-1"
-                  onClick={() => setMenuOpen(false)}>Klaim Saya</Link>
+                  onClick={() => setMenuOpen(false)}>Aktivitas Saya</Link>
                 <Link to="/notifikasi" className="text-gray-600 text-sm font-medium px-2 py-1"
                   onClick={() => setMenuOpen(false)}>
                   Notifikasi {notifCount > 0 && `(${notifCount})`}
