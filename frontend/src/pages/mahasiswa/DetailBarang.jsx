@@ -187,7 +187,7 @@ export default function DetailBarang() {
   if (!item) return null
 
   const isMahasiswa = user?.role === 'mahasiswa'
-  const isOwner     = user?.id === item.user_id
+  const isOwner     = (user && item && user.id && item.user_id) ? (user.id == item.user_id) : false
   const canKlaim    = isMahasiswa && item.tipe === 'FOUND' && item.status === 'OPEN' && !isOwner
   const canReport   = isMahasiswa && item.tipe === 'LOST'  && item.status === 'OPEN' && !isOwner
 
