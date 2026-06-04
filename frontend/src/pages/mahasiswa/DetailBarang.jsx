@@ -351,35 +351,6 @@ export default function DetailBarang() {
                 )}
               </div>
 
-              {/* Deskripsi & Detail — Ditambahkan untuk menjawab request */}
-              <div className="mt-6 pt-6 border-t border-gray-100">
-                <h3 className="text-sm font-bold text-gray-900 mb-2">Deskripsi & Lokasi</h3>
-                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider font-bold text-gray-400 mb-1">Lokasi Utama</p>
-                    <p className="text-sm text-gray-700 font-medium">
-                      {item.tipe === 'FOUND' ? item.lokasi_ditemukan_list : item.lokasi_kemungkinan_list?.join(', ')}
-                    </p>
-                  </div>
-                  {item.deskripsi_detail && (
-                    <div>
-                      <p className="text-[10px] uppercase tracking-wider font-bold text-gray-400 mb-1">Detail Tambahan</p>
-                      <p className="text-sm text-gray-600 whitespace-pre-wrap">{item.deskripsi_detail}</p>
-                    </div>
-                  )}
-                  {/* Info Pelapor — Khusus Admin */}
-                  {user?.role === 'admin' && (
-                    <div className="pt-2 mt-2 border-t border-gray-200">
-                      <p className="text-[10px] uppercase tracking-wider font-bold text-gray-400 mb-1">Informasi Pelapor (Admin Only)</p>
-                      <p className="text-sm text-gray-700">
-                        <span className="font-medium">{item.user_nama}</span> 
-                        <span className="text-gray-500 ml-2">({item.user_nim || 'NIM tidak tersedia'})</span>
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
               {/* Status Closed/Expired Info */}
               {['CLOSED', 'EXPIRED'].includes(item.status) && (
                 <div className="mt-4 px-4 py-3 bg-gray-50 border border-gray-200 rounded-md">
