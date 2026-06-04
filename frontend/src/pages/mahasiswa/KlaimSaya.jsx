@@ -214,8 +214,8 @@ export default function KlaimSaya() {
             </button>
           )}
 
-          {/* Kode Pengambilan — kalau approved */}
-          {isApproved && kode && (
+          {/* Kode Pengambilan — kalau approved (Hanya untuk Klaim) */}
+          {isApproved && kode && type === 'claim' && (
             <button
               onClick={() => openKode({
                 kode,
